@@ -4,7 +4,7 @@ const $=q=>document.querySelector(q);
 const bridge=window.PlayCheckBridge;
 const rules=window.PlayCheckHeuristics;
 const rows=[];
-let timeline=null,videoBusy=false,cancelRequested=false,seq=0;
+let timeline=null,videoBusy=false,cancelRequested=false,visionBusy=false,visionStop=false,seq=0;
 function fmt(sec){return bridge.formatTime(sec);}
 function text(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function note(s,error=false){bridge.notify(s,error);}
@@ -12,13 +12,19 @@ function merge(items){const existing=new Set(rows.map(x=>`${x.source}:${Math.flo
 function render(){
  $('#autoCount').textContent=String(rows.length);
  const counts=rows.reduce((m,r)=>(m[r.source]=(m[r.source]??0)+1,m),{});
- $('#autoSummary').textContent=`전체 ${rows.length}개 · 영상 채팅에서 찾음 ${counts['영상 OCR']??0}개 · 경기 기록에서 찾음 ${counts['경기 타임라인']??0}개 · 트롤링 여부는 직접 확인`; 
+ $('#autoSummary').textContent=`전체 ${rows.length}개 · 영상 채팅 OCR ${counts['영상 OCR']??0}개 · 경기 타임라인 ${counts['경기 타임라인']??0}개 · 고의성은 별도 검토`; 
  const box=$('#autoFindings');
- if(!rows.length){box.innerHTML='<div class="results-empty">아직 찾아낸 내용이 없습니다. 아무것도 찾지 못했다고 정상 플레이인 것은 아닙니다.</div>';return;}
- box.innerHTML=rows.map(r=>`<div class="auto-finding"><div><button class="text-button auto-finding-time" data-seek="${r.at}">${fmt(r.at)} ↗</button><span class="kind">${text(r.source)}</span></div><div><h5>${text(r.title)}</h5><p>${text(r.fact)}</p><p><b>트롤링이 아닐 수 있는 이유:</b> ${text(r.alternative)}</p><p class="subline">${text(r.detail||'')} · 분류: ${text(r.category)}</p><label class="subline">확인 결과 <select data-status="${r.id}"><option>검토 필요</option><option>판단 불가</option><option>정상 설명 가능</option><option>추가 근거 확인</option></select></label><div class="toolrow"><button class="text-button" data-record="${r.id}">이 장면 저장하기 +</button></div></div></div>`).join('');
- for(const el of box.querySelectorAll('[data-seek]'))el.onclick=()=>bridge.seekTo(Number(el.dataset.seek));
+ if(!rows.length){box.innerHTML='<div class="results-empty">아직 후보가 없습니다. 의심 신호가 감지되지 않아도 정상으로 확정되는 것은 아닙니다.</div>';return;}
+ box.innerHTML=rows.map(r=>`<div class="auto-finding"><div><button class="text-button auto-finding-time" data-seek="${r.at}">${fmt(r.at)} ↗</button><span class="kind">${text(r.source)}</span></div><div><h5>${text(r.title)}</h5><p>${text(r.fact)}</p><p><b>정상 가능성:</b> ${text(r.alternative)}</p><p class="subline">${text(r.detail||'')} · 분류: ${text(r.category)}</p><label class="subline">검토 상태 <select data-status="${r.id}"><option>검토 필요</option><option>판단 불가</option><option>정상 설명 가능</option><option>추가 근거 확인</option></select></label><div class="toolrow"><button class="text-button" data-record="${r.id}">기록에 추가</button><button class="text-button" data-review="${r.id}">이 장면 자세히 확인</button></div></div></div>`).join('');
+ for(const el of box.querySelectorAll('[data-seek]'))el.onclick=()=>{bridge.seekTo(Number(el.dataset.seek));window.EvidenceCommon?.useFinding?.(rows.find(r=>String(r.at)===el.dataset.seek)||{});};
  for(const el of box.querySelectorAll('[data-status]')){const r=rows.find(r=>String(r.id)===el.dataset.status);el.value=r?.status??'검토 필요';el.onchange=()=>{if(r)r.status=el.value;bridge.renderReport();};}
- for(const el of box.querySelectorAll('[data-record]'))el.onclick=()=>{const r=rows.find(r=>String(r.id)===el.dataset.record);if(!r)return;bridge.addEvent({seconds:Math.round(r.at),type:r.category,fact:r.fact,alternative:r.alternative,status:'검토 필요',source:`자동 후보: ${r.source}`});note('찾아낸 장면을 내 기록에 추가했습니다.');};
+ for(const el of box.querySelectorAll('[data-review]'))el.onclick=()=>{
+   const r=rows.find(r=>String(r.id)===el.dataset.review);if(!r)return;
+   window.EvidenceCommon?.useFinding?.(r);
+   bridge.tab('standards');
+   note(`${fmt(r.at)} 장면이 검토 화면에 입력되었습니다. 영상은 수동으로 확인해야 합니다.`);
+ };
+ for(const el of box.querySelectorAll('[data-record]'))el.onclick=()=>{const r=rows.find(r=>String(r.id)===el.dataset.record);if(!r)return;bridge.addEvent({seconds:Math.round(r.at),type:r.category,fact:r.fact,alternative:r.alternative,status:'검토 필요',source:`자동 분석: ${r.source}`});note('검토 후보를 영상 근거 기록에 추가했습니다.');};
 }
 function progress(done,total,msg){let p=total?Math.round(100*done/total):0;$('#autoProgress').setAttribute('aria-valuenow',String(p));$('#autoProgressBar').style.width=p+'%';$('#autoVideoStatus').textContent=`${msg} · ${done}/${total}프레임 (${p}%)`;}
 async function scanVideo(){
@@ -33,7 +39,7 @@ async function scanVideo(){
  const original=video.currentTime;video.pause();
  const found=[],seen=new Map();let examined=0;
  try{
-  $('#autoVideoStatus').textContent='채팅 글자를 읽을 준비를 하고 있습니다...';
+  $('#autoVideoStatus').textContent='한국어·영어 OCR 모델 준비 중...';
   const worker=await bridge.ensureOCR();
   $('#ocrCrop').value=$('#autoCrop').value;
   for(let i=0;i<count;i++){
@@ -50,25 +56,60 @@ async function scanVideo(){
      const prev=seen.get(signature);
      if(signature.length>=3 && (prev===undefined||at-prev>=60)){
       seen.set(signature,at);
-      found.push({source:'영상 OCR',at,category:labels.join(' / '),title:labels[0],rule:'OCR 문구',fact:`화면에서 읽힌 글자: “${s}”`,alternative:'OCR 오인식·인용·농담·실제 게임 진행 여부를 영상과 함께 확인해야 합니다.',detail:`${i+1}번째로 확인한 화면 · 글자 인식 정확도 참고값 ${Math.round(Number(result.data?.confidence)||0)}`});
+      found.push({source:'영상 OCR',at,category:labels.join(' / '),title:labels[0],rule:'OCR 문구',fact:`화면에서 읽힌 글자: “${s}”`,alternative:'OCR 오인식·인용·농담·실제 게임 진행 여부를 영상과 함께 확인해야 합니다.',detail:`화면 표본 ${i+1}번째 · OCR 평균 인식 신뢰도 ${Math.round(Number(result.data?.confidence)||0)}(참고값)`});
      }
    }
-   examined++; progress(examined,count,`영상 채팅 확인 중 · 수상한 문구 ${found.length}개`);
+   examined++; progress(examined,count,`채팅 OCR 실행 중 · 후보 ${found.length}개`);
    // keep UI responsive between sequential video seeks
    if(i%4===0)await new Promise(resolve=>setTimeout(resolve,0));
   }
   merge(found);
   if(found.length){const old=$('#chatInput').value.trim();const extra=found.map(r=>`${fmt(r.at)} OCR: ${r.fact.replace(/^화면에서 읽힌 글자: “|”$/g,'')}`).join('\n');$('#chatInput').value=old?`${old}\n${extra}`:extra;bridge.analyzeChat();}
-  $('#autoVideoStatus').textContent=`${cancelRequested?'사용자가 중지했습니다':'채팅 확인 완료'} · ${examined}프레임 확인 · 새로 찾은 문구 ${found.length}개. 놓친 문구가 있을 수도 있습니다.`;
-  note(`영상 자동 탐색 ${cancelRequested?'중지':'완료'}: 새로 찾은 내용 ${found.length}건.`);
+  $('#autoVideoStatus').textContent=`${cancelRequested?'사용자가 중지했습니다':'자동 탐색 완료'} · ${examined}프레임 확인 · 신규 후보 ${found.length}개. 탐지되지 않은 구간도 확인이 필요할 수 있습니다.`;
+  note(`영상 자동 탐색 ${cancelRequested?'중지':'완료'}: 새 검토 후보 ${found.length}건.`);
  }catch(err){$('#autoVideoStatus').textContent=`영상 자동 분석 중 오류 발생: ${err.message}`;note(`OCR 분석 실패: ${err.message}`,true);}finally{videoBusy=false;$('#autoStartBtn').disabled=false;$('#autoStopBtn').disabled=true;try{await bridge.setVideoTime(original);}catch(_){/* keep output */}}
 }
+async function scanVisual(){
+ if(visionBusy||videoBusy){note('다른 영상 분석이 진행 중입니다.',true);return;}
+ const video=bridge.video,V=window.PlayCheckVision;
+ if(!V || !bridge.hasVideo()||!Number.isFinite(video.duration)||video.duration<=0){note('먼저 재생 가능한 영상을 선택하세요.',true);return;}
+ const step=Number($('#visionStep').value)||20,total=Math.ceil(video.duration/step);
+ if(total>1800){note('영상이 길어 확인할 화면이 1,800개를 넘습니다. 더 긴 간격이 필요합니다.',true);return;}
+ visionBusy=true;visionStop=false;$('#visualScanBtn').disabled=true;$('#visualStopBtn').disabled=false;
+ const original=video.currentTime,wasPlaying=!video.paused;video.pause();
+ const canvas=document.createElement('canvas');canvas.width=96;canvas.height=54;
+ const ctx=canvas.getContext('2d',{willReadFrequently:true});let prev=null;
+ const samples=[];
+ try{
+  for(let i=0;i<total;i++){
+   if(visionStop)break;
+   const at=Math.min(video.duration-.05,i*step);
+   await bridge.setVideoTime(at);
+   ctx.drawImage(video,0,0,canvas.width,canvas.height);
+   const metrics=V.measure(ctx.getImageData(0,0,canvas.width,canvas.height));
+   samples.push({at,chroma:metrics.chroma,brightness:metrics.brightness,delta:prev?V.difference(prev,metrics):Infinity});
+   prev=metrics;
+   const pct=Math.round((i+1)/total*100);
+   $('#visionProgress').setAttribute('aria-valuenow',String(pct));
+   $('#visionProgressBar').style.width=pct+'%';
+   $('#visionStatus').textContent=`화면 확인 중 · ${i+1}/${total} (${pct}%)`;
+   if(i%5===0)await new Promise(resolve=>setTimeout(resolve,0));
+  }
+  const items=V.analyze(samples,{step});merge(items);
+  $('#visionStatus').textContent=`${visionStop?'중단됨':'완료'} · ${samples.length}개 화면 확인 · 다시 볼 구간 ${items.length}개`;
+  note(`화면 분석 ${visionStop?'중단':'완료'}: ${items.length}개 구간이 표시되었습니다.`);
+ }catch(e){note(`화면 분석 오류: ${e.message}`,true);$('#visionStatus').textContent=`화면 분석 오류: ${e.message}`;}
+ finally{visionBusy=false;$('#visualScanBtn').disabled=false;$('#visualStopBtn').disabled=true;try{await bridge.setVideoTime(original);if(wasPlaying)video.play().catch(()=>{});}catch(_){/* no-op */}}
+}
+$('#visualScanBtn').onclick=scanVisual;
+$('#visualStopBtn').onclick=()=>{visionStop=true;$('#visionStatus').textContent='현재 화면을 확인한 뒤 중지합니다.';};
+
 $('#autoStartBtn').onclick=scanVideo;
-$('#autoStopBtn').onclick=()=>{cancelRequested=true;$('#autoVideoStatus').textContent='중지하고 있습니다. 현재 화면을 읽은 뒤 멈춥니다.';};
-function populateIds(ids){$('#autoJungleId').innerHTML='<option value="">선택 안 함 · 정글러 CS 확인 생략</option>'+ids.map(id=>`<option value="${text(id)}">플레이어 ${text(id)} (정글러인지 직접 확인)</option>`).join('');}
-function loadTimeline(raw,filename){const result=rules.analyzeTimeline(raw,{jungleId:'',csRate:5});timeline=raw;populateIds(result.participants);$('#autoTimelineBtn').disabled=false;$('#autoTimelineStatus').textContent=`${filename} · ${result.meta.frames}개 시점의 경기 기록 · 플레이어 ${result.participants.length}명. 정글러 번호를 알면 선택해 주세요.`;return result;}
-$('#autoTimeline').onchange=async e=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>80*1024*1024)throw Error('타임라인 JSON 파일은 80MB 이하여야 합니다.');let data=JSON.parse(await file.text());loadTimeline(data,file.name);note('타임라인을 읽었습니다. 이제 경기 기록 살펴보기를 눌러 주세요.');}catch(e){timeline=null;$('#autoTimelineBtn').disabled=true;note(`타임라인 읽기 실패: ${e.message}`,true);}finally{e.target.value='';}};
-$('#autoTimelineBtn').onclick=()=>{if(!timeline){note('타임라인 JSON을 먼저 선택하세요.',true);return;}try{const result=rules.analyzeTimeline(timeline,{jungleId:$('#autoJungleId').value,csRate:Number($('#autoCsRate').value)});merge(result.findings);$('#autoTimelineStatus').textContent=`타임라인 분석 완료 · 이번 분석에서 ${result.findings.length}개 확인할 장면 발견 · 현재 ${rows.length}개 저장됨. 정글러가 맞는지 직접 확인해 주세요.`;note('경기 기록에서 수상한 부분을 찾았습니다. 정상 플레이였을 가능성도 확인해 주세요.');}catch(e){note(e.message,true);}};
+$('#autoStopBtn').onclick=()=>{cancelRequested=true;$('#autoVideoStatus').textContent='중지 요청을 받았습니다. 현재 프레임 처리가 끝나면 종료합니다.';};
+function populateIds(ids){$('#autoJungleId').innerHTML='<option value="">선택 안 함 · CS 탈취 의심 생략</option>'+ids.map(id=>`<option value="${text(id)}">참가자 ${text(id)} (역할 직접 확인)</option>`).join('');}
+function loadTimeline(raw,filename){const result=rules.analyzeTimeline(raw,{jungleId:'',csRate:5});timeline=raw;populateIds(result.participants);$('#autoTimelineBtn').disabled=false;$('#autoTimelineStatus').textContent=`${filename} · ${result.meta.frames}개 타임라인 프레임 · 참가자 ${result.participants.length}명. 정글러 ID를 알면 선택해 주세요.`;return result;}
+$('#autoTimeline').onchange=async e=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>80*1024*1024)throw Error('타임라인 JSON 파일은 80MB 이하여야 합니다.');let data=JSON.parse(await file.text());loadTimeline(data,file.name);note('타임라인을 읽었습니다. 이제 패턴 분석하기를 누르세요.');}catch(e){timeline=null;$('#autoTimelineBtn').disabled=true;note(`타임라인 읽기 실패: ${e.message}`,true);}finally{e.target.value='';}};
+$('#autoTimelineBtn').onclick=()=>{if(!timeline){note('타임라인 JSON을 먼저 선택하세요.',true);return;}try{const result=rules.analyzeTimeline(timeline,{jungleId:$('#autoJungleId').value,csRate:Number($('#autoCsRate').value)});merge(result.findings);$('#autoTimelineStatus').textContent=`타임라인 분석 완료 · 이번 분석에서 ${result.findings.length}개 후보 발견 · 총 ${rows.length}개 누적. 정글러 여부를 직접 확인해야 합니다.`;note('경기 타임라인에서 자동 후보를 찾았습니다. 정상 전략 가능성도 함께 확인해 주세요.');}catch(e){note(e.message,true);}};
 $('#autoDemoBtn').onclick=()=>{
  const demo={metadata:{matchId:'SYNTHETIC-DEMO'},info:{frames:[]}};
  for(let m=0;m<=13;m++){
@@ -81,7 +122,7 @@ $('#autoDemoBtn').onclick=()=>{
   if([5,7,9].includes(m))f.events.push({type:'CHAMPION_KILL',victimId:1,timestamp:m*60000});
   demo.info.frames.push(f);
  }
- loadTimeline(demo,'가상 데모 데이터 (실제 경기 아님)');$('#autoJungleId').value='2';const r=rules.analyzeTimeline(demo,{jungleId:'2',csRate:5});merge(r.findings.map(f=>({...f,source:'가상 예시',fact:`[가상 예시] ${f.fact}`})));note(`예시 분석 완료: 확인할 내용 ${r.findings.length}건. 실제 경기의 고의성을 판단한 결과가 아닙니다.`);
+ loadTimeline(demo,'가상 데모 데이터 (실제 경기 아님)');$('#autoJungleId').value='2';const r=rules.analyzeTimeline(demo,{jungleId:'2',csRate:5});merge(r.findings.map(f=>({...f,source:'가상 예시',fact:`[가상 예시] ${f.fact}`})));note(`가상 데이터 분석 완료: 후보 ${r.findings.length}건. 실제 경기의 고의성을 판단한 결과가 아닙니다.`);
 };
 
 $('#autoImport').onchange=async e=>{
@@ -96,13 +137,13 @@ $('#autoImport').onchange=async e=>{
     return {at,source:'오프라인 영상 OCR',category:String(x.category??'채팅/언어적 공격').slice(0,100),title:String(x.title??'OCR 검토').slice(0,200),rule:'OCR 문구',fact:String(x.fact??'').slice(0,1200),alternative:String(x.alternative??'인식 결과와 실제 영상의 맥락을 확인해야 합니다.').slice(0,1200),detail:'오프라인 분석 결과에서 가져옴',status:'검토 필요'};
   });
   merge(imported);
-  note(`PC에서 분석한 내용 ${imported.length}개를 불러왔습니다. 영상에서 직접 확인해 주세요.`);
+  note(`오프라인 결과 ${imported.length}개를 불러왔습니다. 영상 화면에서 재검토해 주세요.`);
  }catch(err){note(`가져오기 실패: ${err.message}`,true);}finally{e.target.value='';}
 };
 
 $('#autoExport').onclick=()=>{
- if(!rows.length){note('저장할 내용이 없습니다.',true);return;}
- const payload={app:'PlayCheck',version:'4.0',purpose:'의심 신호 검토 보조, 고의성 확정 아님',exportedAt:new Date().toISOString(),items:rows.map(x=>({...x}))};
+ if(!rows.length){note('저장할 자동 탐색 후보가 없습니다.',true);return;}
+ const payload={app:'LoL Griefing Analyzer',version:'5.0',purpose:'의심 신호 검토 보조, 고의성 확정 아님',exportedAt:new Date().toISOString(),items:rows.map(x=>({...x}))};
  bridge.download('playcheck_auto_candidates.json',JSON.stringify(payload,null,2),'application/json;charset=utf-8');
 };
 window.PlayCheckAuto={snapshot:()=>rows.map(x=>({...x})),analyzeTimeline:rules.analyzeTimeline};

@@ -20,16 +20,16 @@
 <div class="hero-main">
 <div class="eyebrow"><span class="gold-line"></span>LoL 트롤링 판독기</div>
 <h1>트롤링이 의심되나요?<br/><em>영상으로 확인해 보세요.</em></h1>
-<p class="hero-copy">영상 속 채팅에서 <strong>'오픈'이나 욕설 같은 표현</strong>을 찾아보고, 경기 기록에서 <strong>사망·CS 변화</strong>도 살펴보세요.<br/>트롤링이 의심되는 장면을 찾아보고, 단순한 실수나 정상적인 플레이였을 가능성도 함께 살펴보세요. 확인한 장면은 기록으로 남길 수 있습니다.</p>
+<p class="hero-copy">영상 속 채팅에서 <strong>'오픈'이나 욕설 같은 표현</strong>을 찾아보고, 경기 기록에서 <strong>사망·CS 변화</strong>도 살펴보세요.<br/>발견된 장면은 해당 시각으로 바로 이동해 확인할 수 있습니다. 결과에는 정상 플레이였을 가능성도 함께 남깁니다.</p>
 <div class="hero-actions"><button class="button primary" id="goVideo">▶ 내 영상으로 시작하기</button><button class="button outline" id="startDemo">예시로 체험하기 →</button></div>
-<p class="hero-safety">🔒 영상 파일은 외부로 전송하지 않아요. <span>트롤링을 자동으로 확정하거나 제재를 결정하지는 않습니다.</span></p>
+<p class="hero-safety">🔒 영상 파일은 서버에 올라가지 않습니다. 분석 결과는 직접 확인할 수 있습니다.</p>
 </div>
 <aside aria-label="이 앱에서 하는 일" class="quick-card">
 <div class="quick-kicker">이 앱에서 할 수 있는 일</div>
 <div class="quick-point"><span class="quick-icon">⚡</span><div><b>영상 속 채팅 찾기</b><small>'오픈', 욕설처럼 문제가 될 수 있는 말 찾기</small></div></div>
 <div class="quick-point"><span class="quick-icon">💬</span><div><b>사망·CS 변화 보기</b><small>경기 기록에서 시간별 변화 확인하기</small></div></div>
-<div class="quick-point"><span class="quick-icon">✓</span><div><b>확인한 장면 저장하기</b><small>언제 무슨 일이 있었는지 적어 두기</small></div></div>
-<p class="quick-foot">찾아낸 내용이 <b>실제 트롤링인지는 영상을 직접 확인해야 합니다.</b></p>
+<div class="quick-point"><span class="quick-icon">✓</span><div><b>찾은 장면으로 이동</b><small>시간을 클릭하면 영상의 해당 부분 재생</small></div></div>
+<p class="quick-foot">트롤링 여부는 발견된 장면을 보고 판단합니다.</p>
 </aside>
 </div>
 <p class="paper-credit"><span>연결된 연구</span> 팀 기반 온라인 게임에서 비협조적 행동의 발생 요인과 제재 판단의 한계에 관한 연구</p>
@@ -46,14 +46,15 @@
 
 
 <section class="panel visible" data-panel="video" role="tabpanel">
-<div class="panel-title"><div><h3>내 경기 영상 열기</h3><p>영상에서 이상한 행동을 발견하면 오른쪽에 시간과 내용을 적어 두세요.</p></div><span class="pill">1단계 · 영상 확인</span></div>
+<div class="panel-title"><div><h3>경기 영상 선택</h3><p>영상을 연 뒤 분석을 시작하면 확인할 장면과 시간이 목록에 표시됩니다.</p></div><span class="pill">1단계 · 파일 선택</span></div>
 <div class="toolrow"><label class="file-button">🎬 영상 파일 선택하기 <input accept="video/*,.mp4,.mkv,.mov,.webm" id="videoFile" type="file"/></label><span class="micro-caption" id="videoName">영상이 선택되지 않았습니다.</span></div>
-<div class="video-grid"><div class="video-container"><video controls="" id="video" playsinline="" preload="metadata"></video><div class="video-empty" id="videoEmpty"><span class="video-icon">▶</span><strong>경기 영상을 선택해 주세요</strong><small>영상이 재생되지 않으면 MP4(H.264) 파일로 시도해 주세요.</small></div></div><div class="annotation"><div class="annot-head">이 장면 기록하기 <span id="currentTime">00:00</span></div><label>어떤 행동인가요?<select id="eventType"><option value="게임 포기 선언 후 행동">게임 포기 선언 후 행동</option><option value="고의적 사망 의심">고의적 사망 의심</option><option value="반복적인 무활동">반복적인 무활동</option><option value="자원·CS 방해 의심">자원·CS 방해 의심</option><option value="넥서스 방어 이탈 의심">넥서스 방어 이탈 의심</option><option value="스킬·아이템 방해 의심">스킬·아이템 방해 의심</option><option value="괴롭힘·방해 의심">괴롭힘·방해 의심</option><option value="채팅/언어적 공격">채팅/언어적 공격</option><option value="정상 플레이 참고">정상 플레이 참고</option><option value="기타">기타</option></select></label><label>무슨 일이 있었나요?<textarea id="eventFact" placeholder="예: 넥서스가 공격받는 동안 아군이 탑 쪽으로 이동함" rows="3"></textarea></label><label>다른 이유가 있을까요? (선택)<input id="eventAlternative" placeholder="예: 백도어 시도였을 수 있음"/></label><label>현재 판단<select id="eventStatus"><option value="검토 필요">검토 필요</option><option value="영상상 사실 확인 / 의도 미확정">영상상 사실 확인 / 의도 미확정</option><option value="의심 기각">의심 기각</option></select></label><button class="button primary wide" id="addEvent">이 순간 기록하기 +</button></div></div>
+<div class="video-primary-actions"><button class="button primary" id="goAutoAnalysis" disabled>⚡ 영상 분석 시작</button><span class="micro-caption">영상 화면과 채팅은 각각 분석합니다. 경기 데이터가 있다면 추가로 불러올 수 있습니다.</span></div>
+<div class="video-grid"><div class="video-container"><video controls="" id="video" playsinline="" preload="metadata"></video><div class="video-empty" id="videoEmpty"><span class="video-icon">▶</span><strong>경기 영상을 선택해 주세요</strong><small>영상이 재생되지 않으면 MP4(H.264) 파일로 시도해 주세요.</small></div></div><details class="annotation manual-annotation"><summary>내가 발견한 장면도 기록하기 <span id="currentTime">00:00</span> <small>선택사항 · 시간 자동 기록</small></summary><div class="manual-fields"><label>어떤 행동인가요?<select id="eventType"><option value="게임 포기 선언 후 행동">게임 포기 선언 후 행동</option><option value="고의적 사망 의심">고의적 사망 의심</option><option value="반복적인 무활동">반복적인 무활동</option><option value="자원·CS 방해 의심">자원·CS 방해 의심</option><option value="넥서스 방어 이탈 의심">넥서스 방어 이탈 의심</option><option value="스킬·아이템 방해 의심">스킬·아이템 방해 의심</option><option value="괴롭힘·방해 의심">괴롭힘·방해 의심</option><option value="채팅/언어적 공격">채팅/언어적 공격</option><option value="정상 플레이 참고">정상 플레이 참고</option><option value="기타">기타</option></select></label><label>무슨 일이 있었나요?<textarea id="eventFact" placeholder="예: 넥서스가 공격받는 동안 아군이 탑 쪽으로 이동함" rows="3"></textarea></label><label>다른 이유가 있을까요? (선택)<input id="eventAlternative" placeholder="예: 백도어 시도였을 수 있음"/></label><label>현재 판단<select id="eventStatus"><option value="검토 필요">검토 필요</option><option value="영상상 사실 확인 / 의도 미확정">영상상 사실 확인 / 의도 미확정</option><option value="의심 기각">의심 기각</option></select></label><button class="button primary wide" id="addEvent">현재 장면 저장</button></div></details></div>
 
 <details class="advanced-section"><summary>영상 속 채팅 글자 읽기 <span>시험 기능</span></summary><div class="ocr-box"><div class="ocr-header"><div><div class="kicker">글자 인식 (OCR)</div><h4>영상에 보이는 채팅 읽어 보기</h4><p>현재 화면 또는 최대 2분 동안의 채팅 글자를 읽습니다. 처음 이용할 때는 한국어·영어 글자 인식 파일을 내려받아야 합니다.</p></div><span class="pill caution">잘못 읽을 수 있어요</span></div><div class="ocr-tools"><label>채팅 화면 영역 <select id="ocrCrop"><option value="left-bottom">왼쪽 아래 40%</option><option value="full">전체 화면</option></select></label><label>구간 시작(초) <input id="ocrStart" min="0" type="number" value="0"/></label><label>구간 길이(초) <input id="ocrLength" max="120" min="5" type="number" value="30"/></label><label>간격(초) <input id="ocrStep" max="30" min="3" type="number" value="5"/></label></div><div class="toolrow"><button class="button light" id="ocrFrame">현재 화면 글자 읽기</button><button class="button outline" id="ocrScan">선택한 구간 글자 읽기</button><span class="micro-caption" id="ocrStatus">처음 실행할 때 인터넷이 필요합니다.</span></div><div class="ocr-output" hidden="" id="ocrOutput"></div><p class="micro-caption">표시되는 시간은 영상 재생 시간입니다. 실제 게임 시간과 다를 수 있으며, 화면 글자를 잘못 읽을 수 있습니다.</p></div></details><div class="event-list-head"><h4>내가 기록한 장면 <span id="eventCount">0</span></h4><button class="text-button" id="sampleEvents">예시 2개 보기</button></div><div class="event-list" id="eventList"><div class="results-empty">아직 기록한 장면이 없습니다.</div></div>
 </section><section class="panel" data-panel="auto" hidden role="tabpanel">
 <div class="panel-title"><div><h3>영상에서 수상한 부분 찾아보기</h3><p>영상에 보이는 <b>채팅</b>을 자동으로 읽고, 별도로 가져온 <b>경기 기록</b>에서 사망·이동·CS 변화를 확인합니다.</p></div><span class="pill">채팅·경기 기록 분석</span></div>
-<div class="friendly-hint">ℹ️ <b>수상한 말이나 숫자가 나왔다고 트롤 확정은 아닙니다.</b> 프로그램이 찾아낸 부분은 직접 영상을 보며 확인해 주세요.</div>
+<div class="friendly-hint">분석한 장면의 시간을 누르면 영상에서 바로 확인할 수 있습니다. 트롤링 여부는 직접 확인해야 합니다.</div>
 <div class="auto-split">
 <article class="auto-card">
  <div class="auto-head"><span class="auto-number">01</span><div><h4>영상 속 채팅에서 수상한 말 찾기</h4><p>영상 화면을 일정한 간격으로 확인해 '오픈'이나 욕설 같은 문구를 찾습니다. 긴 영상은 분석 시간이 오래 걸릴 수 있고, 채팅을 놓칠 수도 있습니다.</p></div></div>
@@ -65,7 +66,7 @@
  </div>
  <div class="toolrow"><button class="button primary" id="autoStartBtn">▶ 채팅에서 수상한 말 찾기</button><button class="button outline" id="autoStopBtn" disabled>분석 중지</button></div>
  <div class="auto-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="autoProgress"><i id="autoProgressBar"></i></div><p class="micro-caption" aria-live="polite" id="autoVideoStatus">먼저 '영상 보기'에서 영상 파일을 선택하세요. 처음 실행할 때는 글자 인식 파일을 내려받습니다.</p>
- <p class="micro-caption">영상에 채팅이 보이지 않으면 읽을 수 없습니다. 아무것도 찾지 못해도 정상 플레이라고 단정할 수는 없습니다.</p>
+ <p class="micro-caption">채팅이 화면에 나타난 구간만 읽습니다. 아무것도 찾지 못해도 정상 플레이라고 단정할 수는 없습니다.</p>
 </article>
 <article class="auto-card">
  <div class="auto-head"><span class="auto-number">02</span><div><h4>경기 기록에서 사망·CS 변화 찾기</h4><p>라이엇 경기 기록(JSON)을 선택하면 사망 횟수, 움직임, CS 변화를 살펴봅니다. 정글러를 선택하면 라인 CS 변화도 확인합니다. <b>영상 파일만으로는 이 분석을 할 수 없습니다.</b></p></div></div>
@@ -73,11 +74,17 @@
  <div class="auto-inputs"><label>정글러 번호 (알면 선택)<select id="autoJungleId"><option value="">선택 안 함 · 정글러 CS 확인 생략</option></select></label><label>라인 CS 표시 기준 <select id="autoCsRate"><option value="4">4개/분 이상 (민감)</option><option value="5" selected>5개/분 이상</option><option value="6">6개/분 이상 (보수적)</option></select></label></div>
  <div class="toolrow"><button class="button light" id="autoTimelineBtn" disabled>경기 기록 살펴보기</button><button class="button outline" id="autoDemoBtn">예시로 체험하기</button></div>
  <p class="micro-caption" id="autoTimelineStatus">경기 기록을 선택한 후 정글러가 몇 번 참가자인지 알면 지정하세요. 역할을 자동으로 구분하지는 못합니다.</p>
- <p class="micro-caption">위 CS 숫자는 화면에 표시할 구간을 정하는 값입니다. 트롤링 여부를 판단하는 공식 기준이 아닙니다.</p>
+ 
+</article>
+<article class="auto-card auto-vision-card">
+ <div class="auto-head"><span class="auto-number">03</span><div><h4>영상 화면 변화 찾기</h4><p>영상에서 흑백 화면이나 화면 정지 구간을 자동으로 찾습니다. 사망·AFK 여부를 확정하는 분석은 아닙니다.</p></div></div>
+ <div class="auto-inputs"><label>화면 확인 간격<select id="visionStep"><option value="10">10초마다 · 자세히</option><option value="20" selected>20초마다 · 보통</option><option value="30">30초마다 · 빠르게</option></select></label></div>
+ <div class="toolrow"><button class="button primary" id="visualScanBtn">▶ 영상 화면 분석</button><button class="button outline" id="visualStopBtn" disabled>분석 중지</button></div>
+ <div class="auto-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="visionProgress"><i id="visionProgressBar"></i></div><p class="micro-caption" id="visionStatus">영상을 선택하면 실행할 수 있습니다. PC 성능에 따라 시간이 걸릴 수 있습니다.</p>
 </article>
 </div>
 <div class="toolrow"><label class="file-button">📥 내 PC에서 분석한 결과 불러오기 <input type="file" id="autoImport" accept=".json,application/json"/></label><span class="micro-caption">큰 영상은 ZIP에 포함된 PC용 분석 도구를 사용한 뒤 결과 파일(JSON)을 가져올 수도 있습니다. 설치·실행 방법은 README를 확인하세요.</span></div>
-<div class="auto-results-head"><div><h4>다시 확인해 볼 장면 <span id="autoCount">0</span></h4><p>찾아낸 시각을 클릭하면 영상의 해당 부분으로 이동합니다. 실제로 문제가 있었는지 확인해 보세요.</p></div><button class="button outline" id="autoExport">찾은 내용 저장 ↓</button></div>
+<div class="auto-results-head"><div><h4>다시 확인해 볼 장면 <span id="autoCount">0</span></h4><p>시간을 누르면 해당 장면으로 이동합니다. 화면 분석 결과는 트롤링 확정이 아닙니다.</p></div><button class="button outline" id="autoExport">찾은 내용 저장 ↓</button></div>
 <div class="auto-summary" id="autoSummary">아직 찾은 내용이 없습니다.</div>
 <div class="auto-findings" id="autoFindings"><div class="results-empty">영상 채팅 검색이나 경기 기록 분석을 먼저 실행해 주세요.</div></div>
 <details class="simple-details"><summary>찾은 내용이 틀릴 수도 있나요?</summary><div class="auto-limit"><p><b>자동으로 찾을 수 있는 것</b> — 화면에 나타난 채팅의 OCR 후보, 타임라인에서의 CS·사망·위치 변화 패턴.</p><p><b>영상만 보고 확정할 수 없는 것</b> — 고의적 사망 여부, 라이너에게서 고의로 CS를 빼앗았는지, 백도어가 가능한 상황이었는지, 채팅 선언 뒤 실제로 게임을 포기했는지.</p><p><b>확인하는 순서</b> — 사실 확인 → 반복성 → 게임 맥락 → 정상적 반례 → 근거 종합. 공식 게임사 제재와 무관합니다.</p></div></details>
@@ -88,18 +95,20 @@
 
 <details class="simple-details"><summary>어떤 기준으로 살펴보나요? <span>5가지 확인 사항</span></summary><div class="rubric-steps"><div><small>01</small><b>영상에서 본 행동</b><span>영상에서 실제 보이는 행동인가?</span></div><div><small>02</small><b>시간·반복</b><span>언제, 몇 번 발생했는가?</span></div><div><small>03</small><b>그때 게임 상황</b><span>승리 목표와 어떤 관계인가?</span></div><div><small>04</small><b>정상 플레이일 가능성</b><span>정상적인 전략이거나 실수일 수도 있는가?</span></div><div><small>05</small><b>여러 장면 함께 보기</b><span>찾은 장면을 직접 보고 판단</span></div></div></details><div class="rule-toolbar"><label class="compact">궁금한 행동 선택 <select aria-label="행동 유형" id="ruleSelect"></select></label><button class="button outline" id="exportRules">확인 기준 저장 ↓</button></div>
 <article aria-live="polite" class="rule-detail" id="ruleDetail"></article>
-<div class="subsection-head"><div><h4>내가 본 장면 기록하기</h4><p>어떤 게임 영상이든 같은 방식으로 기록할 수 있어요.</p></div><button class="button light" id="loadCaseSamples">가상 사례 8개 보기</button></div>
+<div class="subsection-head"><div><h4>장면 확인 기록</h4><p>영상 시간은 자동으로 기록됩니다. 분석 결과에서 장면을 선택하면 여기에 연결됩니다.</p></div><button class="button light" id="loadCaseSamples">가상 사례 8개 보기</button></div>
 <div class="case-form">
 <label>행동 유형<select id="caseType"></select></label>
 <label>출처<select id="caseSource"><option value="직접 녹화">직접 녹화</option><option value="공개 영상">유튜브 등 공개 영상</option><option value="리플레이">게임 리플레이</option><option value="기타">기타</option></select></label>
 <label>영상/리플레이 위치 (선택)<input id="caseUrl" maxlength="1000" placeholder="https://www.youtube.com/watch?v=..." type="url"/></label>
-<label>영상 시점 (MM:SS 또는 HH:MM:SS)<input id="caseTime" maxlength="16" placeholder="15:20"/></label>
+<div class="case-time-auto">
+<strong>영상 시간</strong><span id="caseTimeLabel">영상 선택 전</span><small>재생 중인 시간 또는 분석 결과의 시간이 자동으로 들어갑니다.</small><input id="caseTime" type="hidden" value=""/>
+</div>
 <label class="full">영상에서 실제로 본 행동<textarea id="caseFact" maxlength="3000" placeholder="'트롤 확정' 대신 영상에 보이는 행동을 구체적으로 적어 주세요." rows="3"></textarea></label>
 <label class="full">트롤링이 아닐 수 있는 이유<textarea id="caseAlt" maxlength="3000" placeholder="예: 라이너 사망으로 인한 웨이브 정리, 순간이동을 활용한 백도어, 네트워크 문제" rows="2"></textarea></label>
 </div>
 <fieldset class="evidence-checks"><legend>직접 확인한 내용만 체크하세요</legend><label><input id="eVideo" type="checkbox"/> 실제 영상에서 행동 확인</label><label><input id="eRepeat" type="checkbox"/> 같은 행동이 여러 번 나옴</label><label><input id="eContext" type="checkbox"/> 당시 게임 상황도 확인함</label><label><input id="eChat" type="checkbox"/> 채팅 선언과 이후 행동 연결</label><label><input id="eAlt" type="checkbox"/> 정상 플레이일 가능성도 확인함</label></fieldset>
 <div class="toolrow"><button class="button primary" id="addCase">이 장면 기록하기 +</button><button class="button outline" id="clearCases">기록 모두 지우기</button></div>
-<p class="micro-caption">체크한 내용은 사용자가 직접 확인한 항목입니다. 이 기록은 게임사 제재 결과가 아니며, 자동으로 트롤을 확정하지도 않습니다.</p>
+<p class="micro-caption">직접 확인한 항목만 선택하세요.</p>
 <div class="subsection-head"><div><h4>저장한 장면 <span id="caseCount">0</span></h4><p>수상해 보였던 장면과 정상 플레이로 확인된 장면을 함께 저장할 수 있습니다.</p></div></div>
 <div class="case-list results-empty" id="caseList">아직 저장한 장면이 없습니다. 직접 기록하거나 예시를 불러오세요.</div>
 </section><section class="panel" data-panel="chat" hidden="" role="tabpanel">
@@ -125,6 +134,7 @@
 <script defer="" src="app.js"></script>
 <script defer="" src="standards.js"></script>
 <script defer="" src="heuristics.js"></script>
+<script defer="" src="vision.js"></script>
 <script defer="" src="auto.js"></script>
 </body>
 </html>
