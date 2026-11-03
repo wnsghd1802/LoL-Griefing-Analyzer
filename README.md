@@ -1,4 +1,4 @@
-# 플레이체크 PlayCheck v4 — BR-B 자동 탐색 실험판
+# LoL 트롤링 판독기 (LoL Griefing Analyzer) — BR-B v4
 
 처음 온 사람이 **경기 영상과 타임라인 자료에서 검토할 행동을 더 빨리 찾도록 돕는 앱**입니다. 고의적 방해, 공식 제재 여부, 게임사의 탐지 시스템을 판정하는 프로그램은 아닙니다.
 
@@ -78,3 +78,10 @@ python offline_scan.py "D:\Videos\game.mp4" --step 8 --out result.json
 ```
 
 실행 후 앱의 **자동 후보 찾기 → 오프라인 분석 결과 불러오기**에서 `result.json`을 선택하면 결과를 영상 시각·근거 후보 목록에 추가할 수 있습니다. 오프라인 스캐너는 채팅 영역의 OCR 문구만 검사하며 고의적 방해 동작을 판정하지 않습니다. 브라우저 자동 탐색과 별개의 선택 기능입니다.
+
+
+## 배포
+
+GitHub: https://github.com/wnsghd1802/LoL-Griefing-Analyzer
+
+이 저장소는 웹앱의 소스와 로컬 OCR 도구를 포함합니다. Vercel에는 정적 웹 자원만 배포하며, `offline_scan.py`는 사용자 PC에서 직접 실행해야 합니다. 영상 전체 행동 자동 판정 기능은 구현되어 있지 않습니다.
