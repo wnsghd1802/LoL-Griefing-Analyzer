@@ -16,30 +16,30 @@
   let cases = [];
   const runTime = n => { const m=Math.floor(n/60),s=n%60; return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; };
   const getRule = id => RULES.find(r=>r.id===id) || RULES[RULES.length-1];
-  function showRule(){const r=getRule($('ruleSelect').value);$('ruleDetail').innerHTML=`<div class="rule-heading"><span class="pill">${esc(r.id)}</span><h4>${esc(r.title)}</h4></div><dl><dt>검토할 관찰 신호</dt><dd>${esc(r.signals)}</dd><dt>반드시 확인할 맥락</dt><dd>${esc(r.context)}</dd><dt>고려해야 할 반례</dt><dd>${esc(r.counter)}</dd><dt>잘못된 판단 방지</dt><dd>${esc(r.avoid)}</dd></dl>`;}
+  function showRule(){const r=getRule($('ruleSelect').value);$('ruleDetail').innerHTML=`<div class="rule-heading"><span class="pill">${esc(r.id)}</span><h4>${esc(r.title)}</h4></div><dl><dt>어떤 행동을 확인하나요?</dt><dd>${esc(r.signals)}</dd><dt>그때 어떤 상황이었나요?</dt><dd>${esc(r.context)}</dd><dt>트롤링이 아닐 수도 있는 이유</dt><dd>${esc(r.counter)}</dd><dt>성급하게 판단하지 않으려면</dt><dd>${esc(r.avoid)}</dd></dl>`;}
   function getChecks(){ return {video:$('eVideo').checked,repeat:$('eRepeat').checked,context:$('eContext').checked,chat:$('eChat').checked,alternativeReviewed:$('eAlt').checked}; }
   function seconds(raw){ if(!/^\d{1,3}:\d{2}(?::\d{2})?$/.test(raw))return null;const p=raw.split(':').map(Number);if(p.some((v,i)=>i>0&&v>=60))return null;return p.reduce((a,b)=>a*60+b,0); }
   // Completeness is not a probability of intent or a punishment recommendation.
   function evidenceStatus(item){const e=item.checks;
-    if(!item.fact||item.at===null)return '자료 부족 · 시간/관찰 사실 보완';
-    if(!e.video)return '직접 관찰 근거 확인 필요';
-    if(!e.context||!e.alternativeReviewed||!item.alternative)return '판단 보류 · 맥락/반례 검토';
-    if(e.repeat||e.chat)return '다각도 근거 기록됨 · 사람 검토';
-    return '기본 근거 기록됨 · 추가 확인';
+    if(!item.fact||item.at===null)return '자료 부족 · 시간과 행동을 더 적어 주세요';
+    if(!e.video)return '영상에서 직접 확인이 필요해요';
+    if(!e.context||!e.alternativeReviewed||!item.alternative)return '판단 보류 · 당시 상황을 더 확인하세요';
+    if(e.repeat||e.chat)return '여러 장면이 기록됨 · 직접 확인 필요';
+    return '장면 기록됨 · 추가 확인 필요';
   }
   function validateAndAdd(){ const fact=$('caseFact').value.trim(),alternative=$('caseAlt').value.trim(),raw=$('caseTime').value.trim(),at=seconds(raw),url=$('caseUrl').value.trim(),type=$('caseType').value,src=$('caseSource').value;
     if(!fact){error('영상에서 직접 관찰한 사실을 작성해 주세요.');return;}
     if(at===null){error('시점을 MM:SS 또는 HH:MM:SS 형식으로 입력해 주세요.');return;}
     if(url){try{const p=new URL(url);if(!['https:','http:'].includes(p.protocol))throw Error('protocol');}catch(_){error('링크는 올바른 http 또는 https URL이어야 합니다.');return;}}
     const item={id:'CASE-'+Date.now()+'-'+Math.floor(Math.random()*10000),type,source:src,url,at,time:raw,fact,alternative,checks:getChecks(),origin:'사용자 기록'};
-    cases.push(item);render();['caseFact','caseAlt','caseUrl','caseTime'].forEach(id=>$(id).value='');['eVideo','eRepeat','eContext','eChat','eAlt'].forEach(id=>$(id).checked=false);error('공통 기준으로 사건을 기록했습니다.',false);
+    cases.push(item);render();['caseFact','caseAlt','caseUrl','caseTime'].forEach(id=>$(id).value='');['eVideo','eRepeat','eContext','eChat','eAlt'].forEach(id=>$(id).checked=false);error('장면을 저장했습니다.',false);
   }
   function error(message,isError=true){ const element=$('feedback'); element.hidden=false;element.className='feedback'+(isError?' error':'');element.textContent=message; }
   function render(){ $('caseCount').textContent=String(cases.length);const box=$('caseList');
-    if(!cases.length){box.className='case-list results-empty';box.textContent='아직 기록된 사건이 없습니다. 위 양식에 입력하거나 다양한 가상 사례를 불러오세요.';return;}
+    if(!cases.length){box.className='case-list results-empty';box.textContent='아직 저장한 장면이 없습니다. 직접 기록하거나 예시를 불러오세요.';return;}
     box.className='case-list';box.innerHTML=cases.map(x=>{const rule=getRule(x.type);const badges=Object.entries(x.checks).filter(([_,v])=>v).map(([k])=>({'video':'영상 확인','repeat':'반복 확인','context':'맥락 확인','chat':'채팅 연계','alternativeReviewed':'반례 검토'}[k])).join(' · ');
       const url=x.url?`<a class="case-link" href="${esc(x.url)}" target="_blank" rel="noopener noreferrer">원본 영상 링크 ↗</a>`:'';
-      return `<article class="case-item"><div class="case-top"><span class="pill">${esc(rule.title)}</span><span class="case-status">${esc(evidenceStatus(x))}</span></div><p class="case-fact">${esc(x.fact)}</p><p class="case-notes">${esc(x.source)} · ${esc(x.time)} · ${esc(x.origin)} ${url}</p><p class="case-alt">반례: ${esc(x.alternative||'미입력')}</p><p class="case-notes">확인: ${esc(badges||'체크된 근거 없음')}</p><div class="case-actions"><button class="text-button" data-case-delete="${esc(x.id)}">기록 삭제</button></div></article>`;
+      return `<article class="case-item"><div class="case-top"><span class="pill">${esc(rule.title)}</span><span class="case-status">${esc(evidenceStatus(x))}</span></div><p class="case-fact">${esc(x.fact)}</p><p class="case-notes">${esc(x.source)} · ${esc(x.time)} · ${esc(x.origin)} ${url}</p><p class="case-alt">트롤링이 아닐 수 있는 이유: ${esc(x.alternative||'미입력')}</p><p class="case-notes">확인: ${esc(badges||'체크된 근거 없음')}</p><div class="case-actions"><button class="text-button" data-case-delete="${esc(x.id)}">기록 삭제</button></div></article>`;
     }).join('');box.querySelectorAll('[data-case-delete]').forEach(b=>b.addEventListener('click',()=>{cases=cases.filter(x=>x.id!==b.dataset.caseDelete);render();}));
     if($('reportCases'))$('reportCases').textContent=String(cases.length);
   }
@@ -55,7 +55,7 @@
   ];
   function loadDemo(){ if(cases.some(x=>x.origin==='가상 연습 자료')){error('이미 다양한 가상 사례가 입력되어 있습니다.',false);return;}samples.forEach((x,i)=>cases.push({...x,id:'SAMPLE-'+i,source:'가상 연습',url:'',time:runTime(x.at),origin:'가상 연습 자료'}));render();error('서로 다른 행동 유형의 가상 사례 8건을 불러왔습니다. 실제 영상 분석 결과가 아닙니다.',false);}
   function downloadJson(name,data){const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
-  function clearCases(){cases=[];render();error('사건 기록이 초기화되었습니다.',false);}
+  function clearCases(){cases=[];render();error('저장한 장면을 모두 지웠습니다.',false);}
   RULES.forEach(r=>{[$('ruleSelect'),$('caseType')].forEach(sel=>{const opt=document.createElement('option');opt.value=r.id;opt.textContent=r.title;sel.appendChild(opt);});});
   $('ruleSelect').addEventListener('change',showRule);$('caseType').addEventListener('change',()=>{$('ruleSelect').value=$('caseType').value;showRule();});
   $('addCase').addEventListener('click',validateAndAdd);
