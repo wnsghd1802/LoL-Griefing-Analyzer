@@ -1,0 +1,15 @@
+{
+  "format": "cs-series",
+  "participantId": 2,
+  "note": "가상 경기의 일반 미니언 처치 변화. 정글러 역할 또는 고의성 판단 불가",
+  "intervals": [
+    {"start": 4, "end": 5, "cs": 2},
+    {"start": 5, "end": 6, "cs": 1},
+    {"start": 6, "end": 7, "cs": 4},
+    {"start": 7, "end": 8, "cs": 6},
+    {"start": 8, "end": 9, "cs": 1},
+    {"start": 11, "end": 12, "cs": 7},
+    {"start": 14, "end": 15, "cs": 2},
+    {"start": 15, "end": 16, "cs": 4}
+  ]
+}

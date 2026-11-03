@@ -1,0 +1,99 @@
+{
+  "metadata": {
+    "matchId": "DEMO_ANON_SAMPLE"
+  },
+  "info": {
+    "frames": [
+      {
+        "timestamp": 0,
+        "participantFrames": {
+          "1": {
+            "participantId": 1,
+            "minionsKilled": 0,
+            "jungleMinionsKilled": 0
+          },
+          "2": {
+            "participantId": 2,
+            "minionsKilled": 0,
+            "jungleMinionsKilled": 17
+          }
+        }
+      },
+      {
+        "timestamp": 60000,
+        "participantFrames": {
+          "1": {
+            "participantId": 1,
+            "minionsKilled": 2,
+            "jungleMinionsKilled": 0
+          },
+          "2": {
+            "participantId": 2,
+            "minionsKilled": 0,
+            "jungleMinionsKilled": 17
+          }
+        }
+      },
+      {
+        "timestamp": 120000,
+        "participantFrames": {
+          "1": {
+            "participantId": 1,
+            "minionsKilled": 4,
+            "jungleMinionsKilled": 0
+          },
+          "2": {
+            "participantId": 2,
+            "minionsKilled": 2,
+            "jungleMinionsKilled": 17
+          }
+        }
+      },
+      {
+        "timestamp": 180000,
+        "participantFrames": {
+          "1": {
+            "participantId": 1,
+            "minionsKilled": 6,
+            "jungleMinionsKilled": 0
+          },
+          "2": {
+            "participantId": 2,
+            "minionsKilled": 5,
+            "jungleMinionsKilled": 17
+          }
+        }
+      },
+      {
+        "timestamp": 270000,
+        "participantFrames": {
+          "1": {
+            "participantId": 1,
+            "minionsKilled": 10,
+            "jungleMinionsKilled": 0
+          },
+          "2": {
+            "participantId": 2,
+            "minionsKilled": 11,
+            "jungleMinionsKilled": 17
+          }
+        }
+      },
+      {
+        "timestamp": 330000,
+        "participantFrames": {
+          "1": {
+            "participantId": 1,
+            "minionsKilled": 11,
+            "jungleMinionsKilled": 0
+          },
+          "2": {
+            "participantId": 2,
+            "minionsKilled": 11,
+            "jungleMinionsKilled": 17
+          }
+        }
+      }
+    ]
+  }
+}
