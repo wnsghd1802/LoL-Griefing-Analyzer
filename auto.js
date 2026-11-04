@@ -12,7 +12,7 @@ function merge(items){const existing=new Set(rows.map(x=>`${x.source}:${Math.flo
 function render(){
  $('#autoCount').textContent=String(rows.length);
  const counts=rows.reduce((m,r)=>(m[r.source]=(m[r.source]??0)+1,m),{});
- $('#autoSummary').textContent=`전체 ${rows.length}개 · 영상 채팅 OCR ${counts['영상 OCR']??0}개 · 경기 타임라인 ${counts['경기 타임라인']??0}개 · 고의성은 별도 검토`; 
+ $('#autoSummary').textContent=`전체 ${rows.length}개 · 영상 채팅 OCR ${(counts['영상 OCR']??0)+(counts['재생 중 OCR']??0)}개 · 경기 타임라인 ${counts['경기 타임라인']??0}개 · 고의성은 별도 검토`; 
  const box=$('#autoFindings');
  if(!rows.length){box.innerHTML='<div class="results-empty">아직 후보가 없습니다. 의심 신호가 감지되지 않아도 정상으로 확정되는 것은 아닙니다.</div>';return;}
  box.innerHTML=rows.map(r=>`<div class="auto-finding"><div><button class="text-button auto-finding-time" data-seek="${r.at}">${fmt(r.at)} ↗</button><span class="kind">${text(r.source)}</span></div><div><h5>${text(r.title)}</h5><p>${text(r.fact)}</p><p><b>정상 가능성:</b> ${text(r.alternative)}</p><p class="subline">${text(r.detail||'')} · 분류: ${text(r.category)}</p><label class="subline">검토 상태 <select data-status="${r.id}"><option>검토 필요</option><option>판단 불가</option><option>정상 설명 가능</option><option>추가 근거 확인</option></select></label><div class="toolrow"><button class="text-button" data-record="${r.id}">기록에 추가</button><button class="text-button" data-review="${r.id}">이 장면 자세히 확인</button></div></div></div>`).join('');
@@ -30,12 +30,12 @@ function progress(done,total,msg){let p=total?Math.round(100*done/total):0;$('#a
 const rawSamples=[];
 function showOCRSamples(samples,examined=0){
  const n=Number($('#ocrReadableCount')?.textContent||0);
- $('#ocrRawPreview').textContent=samples.length?samples.slice(0,15).map(x=>`${fmt(x.at)} · ${x.raw}`).join('\n\n'):'아직 인식한 글자가 없습니다.';
+ $('#ocrRawPreview').textContent=samples.length?samples.slice(-15).map(x=>`${fmt(x.at)} · ${x.raw}`).join('\n\n'):'아직 인식한 글자가 없습니다.';
  $('#ocrDebugHelp').textContent=`검사 화면 ${examined}개 · 글자 인식 화면 ${n}개 · 표시 예시 ${Math.min(samples.length,15)}개. 채팅이 안 보이면 화면 위치를 바꾸거나 화면 글자 확인을 눌러 주세요.`;
 }
 function collectText(raw,at,arr){
  const cleaned=String(raw??'').replace(/\s+/g,' ').trim();
- if(cleaned.length>=2 && arr.length<15)arr.push({at,raw:cleaned.slice(0,300)});
+ if(cleaned.length>=2){arr.push({at,raw:cleaned.slice(0,300)});if(arr.length>60)arr.shift();}
 }
 async function readyForVideo(video){
  if(!bridge.hasVideo())throw Error('먼저 영상 파일을 선택해 주세요.');
@@ -53,15 +53,17 @@ async function scanVideo(){
  if(videoBusy||visionBusy){note('다른 영상 분석이 진행 중입니다.',true);return;}
  const video=bridge.video;
  videoBusy=true;cancelRequested=false;$('#autoStartBtn').disabled=true;$('#autoStopBtn').disabled=false;
- let original=video.currentTime,examined=0,readable=0;
+ let original=video.currentTime,examined=0,readable=0,delivered=0;
  const found=[],seen=new Map(),samples=[];
  try{
   $('#autoVideoStatus').textContent='영상 파일 읽는 중...';
   await readyForVideo(video);
+  video.pause();
+  await window.PlayCheckLiveOCR?.pauseForScan?.();
   const start=Number($('#autoStart').value),endRaw=$('#autoEnd').value.trim(),end=endRaw===''?video.duration:Number(endRaw),step=Number($('#autoStep').value);
   if(![start,end,step].every(Number.isFinite)||start<0||end<=start||end>video.duration+.5||step<=0)throw Error('시작·종료 시간과 간격을 확인하세요. 종료 시각은 영상 길이 이하여야 합니다.');
   const count=Math.ceil((end-start)/step);
-  if(count>1800)throw Error(`검사 화면 ${count}개가 최대 1,800개를 넘습니다. 간격을 늘리거나 범위를 나눠 주세요.`);
+  if(count>3600)throw Error(`검사 화면 ${count}개가 최대 3,600개를 넘습니다. 간격을 늘리거나 범위를 나눠 주세요.`);
   original=video.currentTime;video.pause();
   $('#autoVideoStatus').textContent='한국어·영어 문자 인식 모델을 준비하는 중... 첫 실행은 인터넷 연결이 필요합니다.';
   const worker=await bridge.ensureOCR();
@@ -72,11 +74,22 @@ async function scanVideo(){
    const at=Math.min(end-.05,start+i*step);
    if(at>=video.duration)break;
    await bridge.setVideoTime(at);
-   const canvas=bridge.frameCanvas();
-   const result=await worker.recognize(canvas);
-   const raw=String(result.data?.text??'').trim();
+   let canvas=bridge.frameCanvas();
+   let result=await worker.recognize(canvas);
+   let raw=String(result.data?.text??'').trim();
+   let candidates=rules.extractOCRCandidates(raw);
+   if(!candidates.length && (raw.length<18 || i%3===0)){
+     const enhanced=bridge.frameCanvas('contrast');
+     const second=await worker.recognize(enhanced);
+     const alt=String(second.data?.text??'').trim();
+     const secondCandidates=rules.extractOCRCandidates(alt);
+     if(secondCandidates.length || (!raw&&alt)){raw=alt;candidates=secondCandidates;canvas=enhanced;result=second;}
+   }
    if(raw.length>=2){readable++;$('#ocrReadableCount').textContent=String(readable);collectText(raw,at,samples);}
-   const candidates=rules.extractOCRCandidates(raw);
+   if(i%5===0){
+     const roi=$('#ocrCropPreview');
+     if(roi){canvas.style.cssText='display:block;width:100%;max-width:100%;height:auto;border-radius:8px;';roi.replaceChildren(canvas);}
+   }
    for(const c of candidates){
      const signature=c.labels.join('/')+':'+c.snippet.normalize('NFKC').toLowerCase().replace(/[^\p{L}\d]/gu,'').slice(0,120);
      const prev=seen.get(signature);
@@ -84,6 +97,7 @@ async function scanVideo(){
      seen.set(signature,at);
      found.push({source:'영상 OCR',at,category:c.labels.join(' / '),title:c.labels[0],rule:'OCR 문구',fact:`화면에서 읽힌 글자: “${c.snippet}”`,alternative:'문자 오인식·인용·농담·실제 경기 행동 여부를 함께 확인해야 합니다.',detail:`화면 ${i+1}번째 · 문자 인식 신뢰도 ${Math.round(Number(result.data?.confidence)||0)} (참고값)`});
    }
+   if(found.length>delivered){merge(found.slice(delivered));delivered=found.length;}
    examined++;progress(examined,count,`채팅 OCR 분석 중 · 글자 인식 ${readable}개 화면 · 의심 표현 ${found.length}개`);
    if(i%3===0){showOCRSamples(samples,examined);await new Promise(resolve=>setTimeout(resolve,0));}
   }
@@ -94,7 +108,7 @@ async function scanVideo(){
   $('#autoVideoStatus').textContent=`${state} · 화면 ${examined}개 검사 · 글자 인식 ${readable}개 화면 · 부적절한 표현 후보 ${found.length}건${!found.length?(readable?' · 읽힌 글자가 맞는지 아래에서 확인하세요.':' · 채팅 글자가 읽히지 않았습니다. 화면 위치·화질·채팅 표시 시간을 확인하세요.'):''}`;
   note(`영상 채팅 검사 ${state}: ${found.length}건을 찾았습니다. 실제 인식 텍스트를 아래에서 확인할 수 있습니다.`);
  }catch(err){$('#autoVideoStatus').textContent=`채팅 분석 실패: ${err.message}`;note(`채팅 분석 실패: ${err.message}`,true);}
- finally{videoBusy=false;$('#autoStartBtn').disabled=false;$('#autoStopBtn').disabled=true;try{if(Number.isFinite(video.duration))await bridge.setVideoTime(original);}catch(_){/* 결과 유지 */}}
+ finally{videoBusy=false;$('#autoStartBtn').disabled=false;$('#autoStopBtn').disabled=true;try{if(Number.isFinite(video.duration))await bridge.setVideoTime(original);}catch(_){/* 결과 유지 */}window.PlayCheckLiveOCR?.resumeAfterScan?.();}
 }
 async function previewCurrentFrame(){
  if(videoBusy||visionBusy){note('먼저 진행 중인 분석을 종료해 주세요.',true);return;}
@@ -102,11 +116,13 @@ async function previewCurrentFrame(){
  try{
   await readyForVideo(video);
   $('#autoVideoStatus').textContent='현재 화면에서 글자 읽는 중...';
+  await window.PlayCheckLiveOCR?.pauseForScan?.();
   const worker=await bridge.ensureOCR();
   $('#ocrCrop').value=$('#autoCrop').value;
   const canvas=bridge.frameCanvas();
   const result=await worker.recognize(canvas);
   const raw=String(result.data?.text??'').trim();
+  const roi=$('#ocrCropPreview');if(roi){canvas.style.cssText='display:block;width:100%;max-width:100%;height:auto;border-radius:8px;';roi.replaceChildren(canvas);}
   const candidates=rules.extractOCRCandidates(raw);
   $('#ocrReadableCount').textContent=raw.length>=2?'1':'0';
   showOCRSamples(raw?[{at:video.currentTime,raw:raw.slice(0,700)}]:[],1);
@@ -114,6 +130,7 @@ async function previewCurrentFrame(){
   $('#autoVideoStatus').textContent=raw?`현재 화면 글자 인식됨 · 의심 표현 후보 ${candidates.length}개 · 전체 구간을 검사하려면 '채팅 분석 다시 시작'을 누르세요.`:'현재 화면에서는 글자를 읽지 못했습니다. 채팅창이 보이는 프레임인지, 화면 위치가 맞는지 확인하세요.';
   note(raw?'현재 프레임 글자를 읽었습니다. 아래에 인식 결과를 표시했습니다.':'현재 화면의 채팅 인식 결과가 0건입니다. 화면 위치를 확인해 주세요.',!raw);
  }catch(err){$('#autoVideoStatus').textContent=`현재 화면 OCR 실패: ${err.message}`;note(err.message,true);}
+ finally{window.PlayCheckLiveOCR?.resumeAfterScan?.();}
 }
 
 async function scanVisual(){
@@ -194,6 +211,6 @@ $('#autoExport').onclick=()=>{
  const payload={app:'LoL Griefing Analyzer',version:'5.0',purpose:'의심 신호 검토 보조, 고의성 확정 아님',exportedAt:new Date().toISOString(),items:rows.map(x=>({...x}))};
  bridge.download('playcheck_auto_candidates.json',JSON.stringify(payload,null,2),'application/json;charset=utf-8');
 };
-window.PlayCheckAuto={snapshot:()=>rows.map(x=>({...x})),analyzeTimeline:rules.analyzeTimeline,scanVideo,previewCurrentFrame};
+window.PlayCheckAuto={snapshot:()=>rows.map(x=>({...x})),analyzeTimeline:rules.analyzeTimeline,scanVideo,previewCurrentFrame,isScanning:()=>videoBusy||visionBusy,addOCRFindings:items=>merge(items)};
 render();
 })();
