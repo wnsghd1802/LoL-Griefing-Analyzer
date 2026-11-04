@@ -99,7 +99,33 @@
     // OCR 기본 PSM 3은 한두 줄짜리 게임 채팅을 통째로 놓칠 수 있음. PSM 6은 블록 내 글자 탐색에 적합.
     await state.ocrWorker.setParameters({tessedit_pageseg_mode:'6',preserve_interword_spaces:'1'});
     return state.ocrWorker;}
-  function frameCanvas(){if(video.readyState<2||!video.videoWidth||!video.videoHeight)throw Error('먼저 영상에서 재생 가능한 프레임을 불러오세요.');const full=$('#ocrCrop').value==='full';const x=0,y=full?0:Math.floor(video.videoHeight*.55),w=full?video.videoWidth:Math.floor(video.videoWidth*.60),h=full?video.videoHeight:Math.floor(video.videoHeight*.44);const c=document.createElement('canvas');const scale=full?Math.min(1.25,1920/w):Math.min(2,1920/w);c.width=Math.round(w*scale);c.height=Math.round(h*scale);const ctx=c.getContext('2d',{willReadFrequently:true});ctx.drawImage(video,x,y,w,h,0,0,c.width,c.height);return c;}
+  function frameCanvas(variant='original'){
+    if(video.readyState<2||!video.videoWidth||!video.videoHeight)throw Error('영상에서 재생 가능한 화면을 읽지 못했습니다.');
+    const region=$('#ocrCrop')?.value||'left-bottom';
+    const full=region==='full',wide=region==='left-wide';
+    const W=video.videoWidth,H=video.videoHeight;
+    // 일반적인 LoL 채팅 위치. 이전 55~99% 범위는 HUD/아이템을 과도하게 포함했습니다.
+    const x=0,y=full?0:Math.floor(H*(wide?.34:.45));
+    const w=full?W:Math.floor(W*(wide?.62:.50));
+    const h=full?H:Math.floor(H*(wide?.58:.42));
+    const c=document.createElement('canvas');
+    const scale=full?Math.min(1.2,1920/w):Math.min(3.0,1800/w);
+    c.width=Math.max(1,Math.round(w*scale));c.height=Math.max(1,Math.round(h*scale));
+    const ctx=c.getContext('2d',{willReadFrequently:true});
+    ctx.drawImage(video,x,y,w,h,0,0,c.width,c.height);
+    if(variant==='contrast'){
+      const img=ctx.getImageData(0,0,c.width,c.height),d=img.data;
+      for(let i=0;i<d.length;i+=4){
+        const lum=.2126*d[i]+.7152*d[i+1]+.0722*d[i+2];
+        const bright=Math.max(d[i],d[i+1],d[i+2]);
+        const ink=lum>119||(bright>168&&lum>91);
+        const v=ink?0:255;
+        d[i]=v;d[i+1]=v;d[i+2]=v;
+      }
+      ctx.putImageData(img,0,0);
+    }
+    return c;
+  }
   async function scanOne(worker){const canvas=frameCanvas();const r=await worker.recognize(canvas);return String(r.data.text||'').replace(/\s+/g,' ').trim();}
   async function setVideoTime(target){if(!Number.isFinite(video.duration))throw Error('영상 메타데이터를 확인하지 못했습니다.');target=Math.min(Math.max(0,target),Math.max(0,video.duration-.01));if(Math.abs(video.currentTime-target)<.08)return;await new Promise((resolve,reject)=>{let timer;const cleanup=()=>{clearTimeout(timer);video.removeEventListener('seeked',done);video.removeEventListener('error',fail);};const done=()=>{cleanup();resolve();};const fail=()=>{cleanup();reject(Error('영상 프레임을 읽지 못했습니다.'));};video.addEventListener('seeked',done,{once:true});video.addEventListener('error',fail,{once:true});timer=setTimeout(()=>{cleanup();reject(Error('영상 구간 탐색 시간이 초과되었습니다. 해당 코덱 또는 파일을 확인하세요.'));},12000);try{video.currentTime=target;}catch(e){cleanup();reject(e);}});}
   function addOCRText(lines){const old=$('#chatInput').value.trim();const more=lines.join('\n');if(!more)return;$('#chatInput').value=old?`${old}\n${more}`:more;analyzeChat();}
