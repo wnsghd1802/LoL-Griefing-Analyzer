@@ -12,7 +12,7 @@
 <div class="shell">
 <header class="topbar">
 <a aria-label="LoL 트롤링 판독기 홈" class="logo" href="#intro"><span class="logo-mark">▶</span><span>LoL <span class="dim">트롤링 판독기</span></span></a>
-<div class="header-right"><a class="peer-nav" href="#peer-test">동료 테스트</a><span class="status-dot"></span><span class="local-note">내 영상은 내 컴퓨터에서만 열려요</span><span class="version">BETA</span></div>
+<div class="header-right"><a class="peer-nav" href="#peer-test">동료 테스트</a><span class="status-dot"></span><span class="local-note">내 영상은 내 컴퓨터에서만 열려요</span><span class="version">v5.2 BETA</span></div>
 </header>
 <main>
 <section class="hero" id="intro">
@@ -22,7 +22,7 @@
 <h1>트롤링이 의심되나요?<br/><em>영상으로 확인해 보세요.</em></h1>
 <p class="hero-copy">영상 속 채팅에서 <strong>'오픈'이나 욕설 같은 표현</strong>을 찾아보고, 경기 기록에서 <strong>사망·CS 변화</strong>도 살펴보세요.<br/>발견된 장면은 해당 시각으로 바로 이동해 확인할 수 있습니다. 결과에는 정상 플레이였을 가능성도 함께 남깁니다.</p>
 <div class="hero-actions"><button class="button primary" id="goVideo">▶ 내 영상으로 시작하기</button><button class="button outline" id="startDemo">예시로 체험하기 →</button></div>
-<p class="hero-peer"><a href="#peer-test">동료라면 여기서 1분 테스트 →</a></p><p class="hero-safety">🔒 영상 파일은 서버에 올라가지 않습니다. 분석 결과는 직접 확인할 수 있습니다.</p>
+<p class="hero-safety">🔒 영상 파일은 서버에 올라가지 않습니다. 분석 결과는 직접 확인할 수 있습니다.</p>
 </div>
 <aside aria-label="이 앱에서 하는 일" class="quick-card">
 <div class="quick-kicker">이 앱에서 할 수 있는 일</div>
@@ -48,7 +48,7 @@
 <section class="panel visible" data-panel="video" role="tabpanel">
 <div class="panel-title"><div><h3>경기 영상 선택</h3><p>영상을 연 뒤 분석을 시작하면 확인할 장면과 시간이 목록에 표시됩니다.</p></div><span class="pill">1단계 · 파일 선택</span></div>
 <div class="toolrow"><label class="file-button">🎬 영상 파일 선택하기 <input accept="video/*,.mp4,.mkv,.mov,.webm" id="videoFile" type="file"/></label><span class="micro-caption" id="videoName">영상이 선택되지 않았습니다.</span></div>
-<div class="video-primary-actions"><button class="button primary" id="goAutoAnalysis" disabled>⚡ 영상 분석 시작</button><span class="micro-caption">영상 화면과 채팅은 각각 분석합니다. 경기 데이터가 있다면 추가로 불러올 수 있습니다.</span></div>
+<div class="video-primary-actions"><button class="button primary" id="goAutoAnalysis" disabled>⚡ 영상 분석 시작</button><span class="micro-caption">버튼을 누르면 영상 전체에서 채팅 글자를 자동으로 읽기 시작합니다. 오래 걸릴 수 있으며 진행률이 표시됩니다.</span></div>
 <div class="video-grid"><div class="video-container"><video controls="" id="video" playsinline="" preload="metadata"></video><div class="video-empty" id="videoEmpty"><span class="video-icon">▶</span><strong>경기 영상을 선택해 주세요</strong><small>영상이 재생되지 않으면 MP4(H.264) 파일로 시도해 주세요.</small></div></div><details class="annotation manual-annotation"><summary>내가 발견한 장면도 기록하기 <span id="currentTime">00:00</span> <small>선택사항 · 시간 자동 기록</small></summary><div class="manual-fields"><label>어떤 행동인가요?<select id="eventType"><option value="게임 포기 선언 후 행동">게임 포기 선언 후 행동</option><option value="고의적 사망 의심">고의적 사망 의심</option><option value="반복적인 무활동">반복적인 무활동</option><option value="자원·CS 방해 의심">자원·CS 방해 의심</option><option value="넥서스 방어 이탈 의심">넥서스 방어 이탈 의심</option><option value="스킬·아이템 방해 의심">스킬·아이템 방해 의심</option><option value="괴롭힘·방해 의심">괴롭힘·방해 의심</option><option value="채팅/언어적 공격">채팅/언어적 공격</option><option value="정상 플레이 참고">정상 플레이 참고</option><option value="기타">기타</option></select></label><label>무슨 일이 있었나요?<textarea id="eventFact" placeholder="예: 넥서스가 공격받는 동안 아군이 탑 쪽으로 이동함" rows="3"></textarea></label><label>다른 이유가 있을까요? (선택)<input id="eventAlternative" placeholder="예: 백도어 시도였을 수 있음"/></label><label>현재 판단<select id="eventStatus"><option value="검토 필요">검토 필요</option><option value="영상상 사실 확인 / 의도 미확정">영상상 사실 확인 / 의도 미확정</option><option value="의심 기각">의심 기각</option></select></label><button class="button primary wide" id="addEvent">현재 장면 저장</button></div></details></div>
 
 <details class="advanced-section"><summary>영상 속 채팅 글자 읽기 <span>시험 기능</span></summary><div class="ocr-box"><div class="ocr-header"><div><div class="kicker">글자 인식 (OCR)</div><h4>영상에 보이는 채팅 읽어 보기</h4><p>현재 화면 또는 최대 2분 동안의 채팅 글자를 읽습니다. 처음 이용할 때는 한국어·영어 글자 인식 파일을 내려받아야 합니다.</p></div><span class="pill caution">잘못 읽을 수 있어요</span></div><div class="ocr-tools"><label>채팅 화면 영역 <select id="ocrCrop"><option value="left-bottom">왼쪽 아래 40%</option><option value="full">전체 화면</option></select></label><label>구간 시작(초) <input id="ocrStart" min="0" type="number" value="0"/></label><label>구간 길이(초) <input id="ocrLength" max="120" min="5" type="number" value="30"/></label><label>간격(초) <input id="ocrStep" max="30" min="3" type="number" value="5"/></label></div><div class="toolrow"><button class="button light" id="ocrFrame">현재 화면 글자 읽기</button><button class="button outline" id="ocrScan">선택한 구간 글자 읽기</button><span class="micro-caption" id="ocrStatus">처음 실행할 때 인터넷이 필요합니다.</span></div><div class="ocr-output" hidden="" id="ocrOutput"></div><p class="micro-caption">표시되는 시간은 영상 재생 시간입니다. 실제 게임 시간과 다를 수 있으며, 화면 글자를 잘못 읽을 수 있습니다.</p></div></details><div class="event-list-head"><h4>내가 기록한 장면 <span id="eventCount">0</span></h4><button class="text-button" id="sampleEvents">예시 2개 보기</button></div><div class="event-list" id="eventList"><div class="results-empty">아직 기록한 장면이 없습니다.</div></div>
@@ -60,13 +60,14 @@
  <div class="auto-head"><span class="auto-number">01</span><div><h4>영상 속 채팅에서 수상한 말 찾기</h4><p>영상 화면을 일정한 간격으로 확인해 '오픈'이나 욕설 같은 문구를 찾습니다. 긴 영상은 분석 시간이 오래 걸릴 수 있고, 채팅을 놓칠 수도 있습니다.</p></div></div>
  <div class="auto-inputs">
   <label>채팅을 찾을 화면 위치<select id="autoCrop"><option value="left-bottom">왼쪽 아래 (일반적인 채팅 위치)</option><option value="full">전체 화면</option></select></label>
-  <label>화면 확인 간격<select id="autoStep"><option value="15">빠르게 · 15초에 한 번</option><option value="8" selected>보통 · 8초에 한 번</option><option value="4">자세히 · 4초에 한 번</option></select></label>
+  <label>화면 확인 간격<select id="autoStep"><option value="15">빠르게 · 15초에 한 번</option><option value="8">보통 · 8초에 한 번</option><option value="4" selected>자세히 · 4초에 한 번</option></select></label>
   <label>시작 시간 (초)<input type="number" id="autoStart" min="0" step="1" value="0"/></label>
   <label>끝 시간 (초, 비우면 영상 끝까지)<input type="number" id="autoEnd" min="0" step="1" placeholder="전체 영상"/></label>
  </div>
- <div class="toolrow"><button class="button primary" id="autoStartBtn">▶ 채팅에서 수상한 말 찾기</button><button class="button outline" id="autoStopBtn" disabled>분석 중지</button></div>
+ <div class="toolrow"><button class="button primary" id="autoStartBtn">▶ 채팅 분석 다시 시작</button><button class="button light" id="autoPreviewBtn">현재 영상 화면 글자 확인</button><button class="button outline" id="autoStopBtn" disabled>분석 중지</button></div>
  <div class="auto-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="autoProgress"><i id="autoProgressBar"></i></div><p class="micro-caption" aria-live="polite" id="autoVideoStatus">먼저 '영상 보기'에서 영상 파일을 선택하세요. 처음 실행할 때는 글자 인식 파일을 내려받습니다.</p>
- <p class="micro-caption">채팅이 화면에 나타난 구간만 읽습니다. 아무것도 찾지 못해도 정상 플레이라고 단정할 수는 없습니다.</p>
+ <p class="micro-caption">채팅이 화면에 잠깐 보이면 샘플링 사이에 빠질 수 있습니다. 채팅창을 열어둔 녹화가 유리합니다. 분석 결과가 0건이면 아래에서 실제 인식한 글자를 먼저 확인하세요.</p>
+ <details class="ocr-debug" id="ocrDebug" open><summary>실제 읽힌 채팅 글자 확인 <span id="ocrReadableCount">0</span>개 화면</summary><p class="micro-caption" id="ocrDebugHelp">분석을 실행하면 글자를 읽은 화면의 내용 일부가 여기에 표시됩니다. 판독 결과가 0건일 때 채팅 영역과 OCR 오류를 확인할 수 있습니다.</p><pre id="ocrRawPreview">아직 인식한 글자가 없습니다.</pre></details>
 </article>
 <article class="auto-card">
  <div class="auto-head"><span class="auto-number">02</span><div><h4>경기 기록에서 사망·CS 변화 찾기</h4><p>라이엇 경기 기록(JSON)을 선택하면 사망 횟수, 움직임, CS 변화를 살펴봅니다. 정글러를 선택하면 라인 CS 변화도 확인합니다. <b>영상 파일만으로는 이 분석을 할 수 없습니다.</b></p></div></div>
@@ -127,7 +128,51 @@
 <div class="panel-title"><div><h3>지금까지 기록한 내용 저장하기</h3><p>내가 확인한 장면, 채팅, CS 기록을 파일로 저장할 수 있습니다. 저장하기 전에 닉네임 등 개인정보를 확인해 주세요.</p></div><span class="pill">3단계 · 저장</span></div>
 <div class="report-cards"><div class="metric"><small>직접 확인한 장면</small><strong id="reportCases">0</strong></div><div class="metric"><small>분석된 CS 구간</small><strong id="reportCs">0</strong></div><div class="metric"><small>수상한 채팅</small><strong id="reportChat">0</strong></div><div class="metric"><small>영상에서 저장한 장면</small><strong id="reportEvents">0</strong></div></div>
 <div class="report-preview"><div class="chart-top"><strong>저장할 내용 미리보기</strong><span class="kicker">직접 확인용 기록</span></div><pre id="reportPreview">영상이나 경기 기록을 확인하면 이곳에 내용이 표시됩니다.</pre></div><div class="toolrow"><button class="button primary" id="downloadJson">전체 기록 저장 ↓</button><button class="button outline" id="downloadTxt">읽기 쉬운 요약 저장 ↓</button><button class="button outline" id="downloadChat">채팅 목록 저장 ↓</button></div><div class="callout"><b>개인정보 확인</b> 파일 내보내기 전 실명, 계정명, 연락처가 포함되어 있지 않은지 확인하세요. 분석 결과는 운영사 제재나 특정 이용자의 고의성에 대한 확정 판정이 아닙니다.</div>
-</section></section><details class="research-details" id="research"><summary><span>📖 연구 내용이 궁금하신가요?</span><small>이 앱이 어떤 논문을 바탕으로 만들어졌는지 보기</small></summary><div class="research-body"><h3>팀 기반 온라인 게임에서 비협조적 행동의 발생 요인과 제재 판단의 한계에 관한 연구</h3><p>논문은 채팅만으로 게임 방해 여부를 단정할 수 없고, 행동·상황·반례를 함께 살펴봐야 한다고 제안합니다. 실제 실험에서는 채팅 탐지 방식에 따라 놓치는 문장과 잘못 의심하는 문장의 비율이 달라졌습니다.</p><div class="paper-facts"><div><small>금칙어 기반 채팅 분류 · 평균 F1</small><strong>0.5334</strong></div><div><small>학습된 토큰 점수 분류 · 평균 F1</small><strong>0.6849</strong></div></div><p class="research-caution">이 수치는 논문의 Dota 2 영어 채팅 자료에 대한 실험 결과입니다. 이 앱의 정확도나 리그 오브 레전드 영상 탐지 성능을 뜻하지 않습니다.</p></div></details>
+</section></section><details class="peer-test" id="peer-test" aria-labelledby="peerTitle"><summary class="peer-collapse-head">과제용 · 익명 사용 후기 작성하기 <span>필요할 때 열기</span></summary><div class="peer-inner">
+  <div class="peer-head">
+    <div><span class="kicker">BR-B · 동료 사용성 테스트</span><h2 id="peerTitle">동료의 한 줄 평가</h2><p>설명 없이 처음 접속한 사람이 직접 사용해 보는 테스트입니다. 닉네임이나 실명은 적지 마세요.</p></div>
+    <span class="peer-label">동료 평가 · 실제 의견만 기록</span>
+  </div>
+  <div class="peer-columns">
+    <div class="peer-steps">
+      <h3>1분 테스트 순서</h3>
+      <ol>
+        <li><b>예시를 실행</b>하고 수상한 장면 목록이 보이는지 확인합니다.</li>
+        <li>목록에서 <b>이 장면 자세히 확인</b>을 눌러 시간과 내용이 들어가는지 확인합니다.</li>
+        <li><b>결과 다운로드</b> 메뉴에서 기록 저장이 가능한지 확인합니다.</li>
+      </ol>
+      <button type="button" class="button primary" id="peerTryDemo">예시로 테스트 시작 →</button>
+      <p class="micro-caption">실제 게임 영상은 필요 없습니다. 이 예시는 가상 경기 데이터입니다.</p>
+      <div class="peer-privacy">평가는 이 브라우저에만 보관됩니다. <strong>작성 후 ‘평가 복사’ 또는 ‘파일 저장’으로 개발자에게 보내주세요.</strong> 자동 전송되거나 공개되지 않습니다.</div>
+    </div>
+    <form class="peer-form" id="peerForm">
+      <label class="peer-field">테스트 결과
+        <select id="peerOutcome" required>
+          <option value="">선택해 주세요</option>
+          <option value="완료">3단계를 모두 해봤어요</option>
+          <option value="부분 완료">일부만 할 수 있었어요</option>
+          <option value="진행 불가">시작부터 막혔어요</option>
+        </select>
+      </label>
+      <fieldset class="peer-checks"><legend>직접 성공한 항목만 표시</legend>
+        <label><input type="checkbox" name="peerTask" value="예시 실행"/> 예시 실행</label>
+        <label><input type="checkbox" name="peerTask" value="장면 상세 확인"/> 장면 상세 확인</label>
+        <label><input type="checkbox" name="peerTask" value="결과 다운로드"/> 결과 다운로드</label>
+      </fieldset>
+      <label class="peer-field" for="peerOneLine">동료의 한 줄 감상 <span class="peer-required">필수</span>
+        <textarea id="peerOneLine" rows="2" maxlength="180" required placeholder="실제 사용해 본 느낌을 한 문장으로 적어 주세요. (임의 예시 문구 아님)"></textarea>
+      </label>
+      <label class="peer-field" for="peerProblem">막히거나 불편했던 점 <span class="peer-optional">선택</span>
+        <textarea id="peerProblem" rows="2" maxlength="500" placeholder="예: 버튼 위치를 찾기 어려웠어요. 불편함이 없으면 비워 두세요."></textarea>
+      </label>
+      <div class="peer-actions"><button type="submit" class="button primary">평가 기록하기</button><button type="button" class="button outline" id="peerCopy">평가 복사</button><button type="button" class="button outline" id="peerDownload">파일 저장 ↓</button></div>
+      <div id="peerStatus" class="peer-status" role="status" aria-live="polite">실제 평가를 아직 받지 않았습니다.</div>
+      <div id="peerReceipt" class="peer-receipt" hidden><small>이 브라우저에 저장된 한 줄 평가</small><p id="peerSavedQuote"></p></div>
+      <textarea id="peerCopyFallback" class="peer-copy-fallback" rows="4" readonly hidden aria-label="평가 공유용 텍스트"></textarea>
+    </form>
+  </div></div>
+</details>
+<details class="research-details" id="research"><summary><span>📖 연구 내용이 궁금하신가요?</span><small>이 앱이 어떤 논문을 바탕으로 만들어졌는지 보기</small></summary><div class="research-body"><h3>팀 기반 온라인 게임에서 비협조적 행동의 발생 요인과 제재 판단의 한계에 관한 연구</h3><p>논문은 채팅만으로 게임 방해 여부를 단정할 수 없고, 행동·상황·반례를 함께 살펴봐야 한다고 제안합니다. 실제 실험에서는 채팅 탐지 방식에 따라 놓치는 문장과 잘못 의심하는 문장의 비율이 달라졌습니다.</p><div class="paper-facts"><div><small>금칙어 기반 채팅 분류 · 평균 F1</small><strong>0.5334</strong></div><div><small>학습된 토큰 점수 분류 · 평균 F1</small><strong>0.6849</strong></div></div><p class="research-caution">이 수치는 논문의 Dota 2 영어 채팅 자료에 대한 실험 결과입니다. 이 앱의 정확도나 리그 오브 레전드 영상 탐지 성능을 뜻하지 않습니다.</p></div></details>
 </main>
 <footer><div class="footer-simple"><b>LoL 트롤링 판독기</b><span>트롤링이 의심되는 장면을 찾고 기록하는 도구 · 게임사 공식 제재와 무관합니다.</span><small>BR-B · 2026</small></div></footer>
 </div>
