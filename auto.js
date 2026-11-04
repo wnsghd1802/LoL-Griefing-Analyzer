@@ -85,6 +85,7 @@ async function scanVideo(){
      const secondCandidates=rules.extractOCRCandidates(alt);
      if(secondCandidates.length || (!raw&&alt)){raw=alt;candidates=secondCandidates;canvas=enhanced;result=second;}
    }
+   window.PlayCheckChatLog?.appendFrame(raw,at,'전체 영상 분석');
    if(raw.length>=2){readable++;$('#ocrReadableCount').textContent=String(readable);collectText(raw,at,samples);}
    if(i%5===0){
      const roi=$('#ocrCropPreview');
@@ -122,6 +123,7 @@ async function previewCurrentFrame(){
   const canvas=bridge.frameCanvas();
   const result=await worker.recognize(canvas);
   const raw=String(result.data?.text??'').trim();
+  window.PlayCheckChatLog?.appendFrame(raw,video.currentTime,'현재 화면 OCR');
   const roi=$('#ocrCropPreview');if(roi){canvas.style.cssText='display:block;width:100%;max-width:100%;height:auto;border-radius:8px;';roi.replaceChildren(canvas);}
   const candidates=rules.extractOCRCandidates(raw);
   $('#ocrReadableCount').textContent=raw.length>=2?'1':'0';
