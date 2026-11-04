@@ -87,3 +87,10 @@
 
 /* v5.3 - analysis workspace first, obsolete introduction & peer form removed */
 .workspace{padding-top:30px}.workspace-quick-actions{display:flex;align-items:center;flex-wrap:wrap;gap:10px;padding:0 0 24px}.workspace-quick-actions .micro-caption{margin-left:6px}@media(max-width:600px){.workspace-quick-actions{display:grid;grid-template-columns:1fr 1fr}.workspace-quick-actions .micro-caption{grid-column:1/-1}.workspace-quick-actions .button{font-size:12px;padding:10px 6px;white-space:normal}}
+
+/* v5.4 chat OCR monitoring and crop diagnostics */
+.live-watch-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:8px 0 16px;padding:12px;border:1px solid rgba(90,205,173,.30);border-radius:12px;background:rgba(29,114,91,.08)}
+.live-watch-controls .button{flex-shrink:0}.live-watch-controls .micro-caption{flex:1;line-height:1.5}
+.ocr-preview-label{margin-top:12px;margin-bottom:8px;font-size:12px;font-weight:650}.ocr-crop-preview{min-height:46px;max-height:290px;overflow:auto;border:1px dashed rgba(115,180,175,.36);border-radius:9px;padding:8px;font-size:12px;color:var(--muted)}
+.ocr-crop-preview canvas{image-rendering:auto;width:100%;height:auto;max-width:100%}
+@media(max-width:600px){.live-watch-controls{align-items:stretch;flex-direction:column}.live-watch-controls .button{width:100%}}
