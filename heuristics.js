@@ -87,14 +87,29 @@
    return {participants:knownIds,findings:findings.sort((a,b)=>a.at-b.at).slice(0,LIMIT),meta:{frames:frames.length,matchId:raw.metadata?.matchId??null,jungleRoleProvided:Boolean(jungleId&&knownIds.includes(jungleId)),threshold}};
  }
  function classifyOCR(text){
-   const t=String(text??'').replace(/\s+/g,' ').trim();
+   const t=String(text??'').normalize('NFKC').replace(/\s+/g,' ').trim();
    if(!t)return [];
-   let labels=[];
-   if(/(?:오픈\s*(?:함|해|한다|할게|하자|할거|하겠)|(?:겜|게임)\s*(?:안\s*해|포기|안\s*함)|던진다|던짐|고의로\s*(?:죽|던)|나\s*안\s*함|open\s*(?:mid|top|bot)|\bafk\b)/i.test(t))labels.push('게임 포기·방해 선언 후보');
-   if(/(?:시발|씨발|ㅅㅂ|병신|ㅂㅅ|개새끼|닥쳐|꺼져|\b(?:idiot|stupid|trash|moron|retard|fuck|useless|loser)\b)/i.test(t))labels.push('공격적 표현 후보');
+   const compact=t.replace(/[\s·._-]+/g,'').toLowerCase();
+   const originalCompact=String(text??'').replace(/[\s·._-]+/g,'').toLowerCase();
+   const labels=[];
+   if(/(?:오픈(?:함|해|한다|할게|하자|할거|하겠|각)?|게임포기|겜안함|게임안함|나안해|던진다|던짐|고의로죽|일부러죽)/i.test(compact)||/\b(?:open\s*(?:mid|top|bot)|run\s*it\s*down|i\s*am\s*afk)\b/i.test(t)||/\bafk\b/i.test(t))labels.push('게임 포기·방해 선언 후보');
+   if(/(?:ㅅㅂ|ㅂㅅ|ㅈㄹ)/.test(originalCompact)||/(?:시발|씨발|병신|개새끼|닥쳐|꺼져|느금)/i.test(compact)||/\b(?:idiot|stupid|trash|moron|retard|fuck|fucking|useless|loser)\b/i.test(t))labels.push('공격적 표현 후보');
    return labels;
  }
- const API={analyzeTimeline,classifyOCR};
+ function extractOCRCandidates(text){
+   const raw=String(text??'').replace(/\r/g,'').trim();
+   const lines=raw.split('\n').map(x=>x.replace(/\s+/g,' ').trim()).filter(Boolean);
+   const found=[];
+   for(const line of lines){
+     const labels=classifyOCR(line);
+     if(labels.length)found.push({snippet:line.slice(0,300),labels});
+   }
+   // 채팅이 OCR에서 두 줄로 분리된 경우에는 전체 화면 텍스트도 한 번 확인한다.
+   if(!found.length && lines.length>1){const joined=lines.join(' ');const labels=classifyOCR(joined);if(labels.length)found.push({snippet:joined.slice(0,300),labels});}
+   return found.slice(0,8);
+ }
+
+ const API={analyzeTimeline,classifyOCR,extractOCRCandidates};
  if(typeof module!=='undefined'&&module.exports)module.exports=API;
  root.PlayCheckHeuristics=API;
 })(typeof window!=='undefined'?window:globalThis);
