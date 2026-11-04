@@ -40,6 +40,7 @@
         const altCandidates=rules.extractOCRCandidates(alt);
         if(altCandidates.length||(!raw&&alt)){raw=alt;candidates=altCandidates;canvas=enhanced;result=second;}
       }
+      window.PlayCheckChatLog?.appendFrame(raw,at,'영상 재생 중');
       checked++;
       if(raw.length>=2)readable++;
       latestCanvas(canvas);
