@@ -19,15 +19,16 @@
   async function inspect(){
     if(!enabled||blocked||busy||video.paused||video.ended||!bridge.hasVideo()||video.readyState<2)return;
     if(window.PlayCheckAuto?.isScanning?.())return;
-    const at=Number(video.currentTime);
+    let at=Number(video.currentTime);
     if(!Number.isFinite(at)||Math.abs(at-lastAt)<1.1)return;
-    lastAt=at;busy=true;
+    busy=true;
     try{
       say('재생 중 '+bridge.formatTime(at)+' 화면에서 채팅 읽는 중… 첫 실행은 한국어 OCR 다운로드가 필요합니다.');
       const crop=$('#autoCrop')?.value||'left-bottom';
       if($('#ocrCrop'))$('#ocrCrop').value=crop;
       const worker=await bridge.ensureOCR();
       if(blocked||video.paused)return;
+      at=Number(video.currentTime);lastAt=at;
       let canvas=bridge.frameCanvas();
       let result=await worker.recognize(canvas);
       let raw=String(result.data?.text||'').trim();
