@@ -1,8 +1,9 @@
 (() => {
   'use strict';
   const $=selector=>document.querySelector(selector);
-  const list=$('#chatLogList');
-  const filter=$('#chatLogFilter');
+  const lists=[...document.querySelectorAll('.chat-log-list')];
+  const filters=[...document.querySelectorAll('.chat-log-filter')];
+  let activeFilter='all';
   const recent=new Map();
   const entries=[];
   const maxStored=6000,maxVisible=350;
@@ -16,7 +17,7 @@
   const linesFrom=raw=>String(raw??'').replace(/\u0000/g,'')
     .split(/\r?\n/).map(s=>s.replace(/\s+/g,' ').trim())
     .filter(s=>s.length>=2&&/[\p{L}]/u.test(s)).slice(0,35);
-  function shown(entry){return filter?.value!=='flagged'||entry.flagged;}
+  function shown(entry){return activeFilter!=='flagged'||entry.flagged;}
   function createRow(entry){
     const row=document.createElement('div');
     row.className='chat-log-row'+(entry.flagged?' chat-log-flagged':'');
@@ -33,25 +34,28 @@
     return row;
   }
   function appendRow(entry){
-    if(!list||!shown(entry))return;
-    const follow=list.scrollHeight-list.scrollTop-list.clientHeight<75;
-    list.append(createRow(entry));
-    while(list.children.length>maxVisible)list.firstElementChild?.remove();
-    if(follow)list.scrollTop=list.scrollHeight;
+    if(!shown(entry))return;
+    for(const list of lists){
+      const follow=list.scrollHeight-list.scrollTop-list.clientHeight<75;
+      list.append(createRow(entry));
+      while(list.children.length>maxVisible)list.firstElementChild?.remove();
+      if(follow)list.scrollTop=list.scrollHeight;
+    }
   }
   function repaint(){
-    if(!list)return;
-    list.replaceChildren();
-    for(const item of entries.filter(shown).slice(-maxVisible))list.append(createRow(item));
-    list.scrollTop=list.scrollHeight;
+    for(const list of lists){
+      list.replaceChildren();
+      for(const item of entries.filter(shown).slice(-maxVisible))list.append(createRow(item));
+      list.scrollTop=list.scrollHeight;
+    }
   }
   function update(){
-    const count=$('#chatLogCount'),warnings=$('#chatLogFlaggedCount'),state=$('#chatLogStatus');
-    if(count)count.textContent=String(total);
-    if(warnings)warnings.textContent=String(flagged);
-    if(state)state.textContent=checked===0?'영상을 열고 재생하거나 분석을 시작하세요.':
+    for(const count of document.querySelectorAll('.chat-log-count'))count.textContent=String(total);
+    for(const warnings of document.querySelectorAll('.chat-log-flagged-count'))warnings.textContent=String(flagged);
+    const status=checked===0?'영상을 열고 재생하거나 분석을 시작하세요.':
       '확인한 화면 '+checked+'개 · 글자 인식 화면 '+readable+'개 · 채팅 로그 '+total+'줄'+
       (total===0?' · OCR이 글자를 읽지 못했거나 채팅이 화면에 없었습니다.':'');
+    for(const state of document.querySelectorAll('.chat-log-status'))state.textContent=status;
   }
   function appendFrame(raw,at,source='영상 OCR'){
     checked++;
@@ -81,7 +85,7 @@
   }
   function clear(){
     entries.length=0;recent.clear();checked=0;readable=0;total=0;flagged=0;
-    list?.replaceChildren();update();
+    for(const list of lists)list.replaceChildren();update();
   }
   function exportLog(){
     if(!total){window.PlayCheckBridge?.notify?.('저장할 채팅 로그가 없습니다.',true);return;}
@@ -94,9 +98,9 @@
     ];
     window.PlayCheckBridge?.download?.('lol_video_chat_log.txt',lines.join('\n'),'text/plain;charset=utf-8');
   }
-  filter?.addEventListener('change',repaint);
-  $('#chatLogClear')?.addEventListener('click',clear);
-  $('#chatLogExport')?.addEventListener('click',exportLog);
+  for(const filter of filters)filter.addEventListener('change',()=>{activeFilter=filter.value;for(const other of filters)other.value=activeFilter;repaint();});
+  for(const clearBtn of document.querySelectorAll('.chat-log-clear'))clearBtn.addEventListener('click',clear);
+  for(const exportBtn of document.querySelectorAll('.chat-log-export'))exportBtn.addEventListener('click',exportLog);
   $('#videoFile')?.addEventListener('change',()=>clear());
   window.PlayCheckChatLog={appendFrame,clear,snapshot:()=>entries.map(e=>({...e,labels:[...e.labels]})),stats:()=>({checked,readable,total,flagged})};
   update();
