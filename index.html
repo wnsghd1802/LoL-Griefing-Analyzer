@@ -12,7 +12,7 @@
 <div class="shell">
 <header class="topbar">
 <a aria-label="LoL 트롤링 판독기 홈" class="logo" href="#workspace"><span class="logo-mark">▶</span><span>LoL <span class="dim">트롤링 판독기</span></span></a>
-<div class="header-right"><span class="status-dot"></span><span class="local-note">내 영상은 내 컴퓨터에서만 열려요</span><span class="version">v5.4 BETA</span></div>
+<div class="header-right"><span class="status-dot"></span><span class="local-note">내 영상은 내 컴퓨터에서만 열려요</span><span class="version">v5.5 BETA</span></div>
 </header>
 <main>
 <section class="workspace" id="workspace">
@@ -31,6 +31,19 @@
 <div class="video-primary-actions"><button class="button primary" id="goAutoAnalysis" disabled>⚡ 영상 분석 시작</button><span class="micro-caption">버튼을 누르면 영상 전체에서 채팅 글자를 자동으로 읽기 시작합니다. 오래 걸릴 수 있으며 진행률이 표시됩니다.</span></div>
 <div class="live-watch-controls"><button class="button outline" id="liveWatchToggle" type="button" aria-pressed="true">● 재생 중 채팅 감시: 켜짐</button><span class="micro-caption" id="liveWatchStatus" aria-live="polite">영상을 재생하면 화면 속 채팅을 주기적으로 검사합니다. 최초 실행 시 한국어 OCR 모델을 불러옵니다.</span></div><div class="video-grid"><div class="video-container"><video controls="" id="video" playsinline="" preload="metadata"></video><div class="video-empty" id="videoEmpty"><span class="video-icon">▶</span><strong>경기 영상을 선택해 주세요</strong><small>영상이 재생되지 않으면 MP4(H.264) 파일로 시도해 주세요.</small></div></div><details class="annotation manual-annotation"><summary>내가 발견한 장면도 기록하기 <span id="currentTime">00:00</span> <small>선택사항 · 시간 자동 기록</small></summary><div class="manual-fields"><label>어떤 행동인가요?<select id="eventType"><option value="게임 포기 선언 후 행동">게임 포기 선언 후 행동</option><option value="고의적 사망 의심">고의적 사망 의심</option><option value="반복적인 무활동">반복적인 무활동</option><option value="자원·CS 방해 의심">자원·CS 방해 의심</option><option value="넥서스 방어 이탈 의심">넥서스 방어 이탈 의심</option><option value="스킬·아이템 방해 의심">스킬·아이템 방해 의심</option><option value="괴롭힘·방해 의심">괴롭힘·방해 의심</option><option value="채팅/언어적 공격">채팅/언어적 공격</option><option value="정상 플레이 참고">정상 플레이 참고</option><option value="기타">기타</option></select></label><label>무슨 일이 있었나요?<textarea id="eventFact" placeholder="예: 넥서스가 공격받는 동안 아군이 탑 쪽으로 이동함" rows="3"></textarea></label><label>다른 이유가 있을까요? (선택)<input id="eventAlternative" placeholder="예: 백도어 시도였을 수 있음"/></label><label>현재 판단<select id="eventStatus"><option value="검토 필요">검토 필요</option><option value="영상상 사실 확인 / 의도 미확정">영상상 사실 확인 / 의도 미확정</option><option value="의심 기각">의심 기각</option></select></label><button class="button primary wide" id="addEvent">현재 장면 저장</button></div></details></div>
 
+<section class="chat-log-panel" aria-label="영상 채팅 OCR 로그">
+<div class="chat-log-head">
+  <div><div class="kicker">영상 채팅 · 자동 기록</div><h3>감지된 채팅 로그 <span class="chat-log-count">0</span></h3><p>영상에서 글자가 읽힐 때마다 시간순으로 쌓입니다. 문제 표현은 강조 표시합니다.</p></div>
+  <div class="chat-log-actions">
+    <label class="chat-log-filter-wrap">표시 <select class="chat-log-filter" aria-label="채팅 로그 표시 범위"><option value="all">모든 채팅</option><option value="flagged">문제 표현만</option></select></label>
+    <button class="button outline chat-log-export" type="button">로그 저장 ↓</button>
+    <button class="text-button chat-log-clear" type="button">비우기</button>
+  </div>
+</div>
+<div class="chat-log-counter">확인할 표현 <b class="chat-log-flagged-count">0</b>건 <span class="chat-log-status" role="status">영상을 열고 재생하거나 분석을 시작하세요.</span></div>
+<div class="chat-log-list" role="list" aria-label="시간순 채팅 OCR 기록"></div>
+<p class="chat-log-hint">OCR로 읽힌 글자이므로 실제 채팅과 다를 수 있습니다. 시간 버튼을 누르면 해당 영상으로 이동합니다. 같은 문장은 짧은 시간 동안 중복 표시하지 않습니다.</p>
+</section>
 <details class="advanced-section"><summary>영상 속 채팅 글자 읽기 <span>시험 기능</span></summary><div class="ocr-box"><div class="ocr-header"><div><div class="kicker">글자 인식 (OCR)</div><h4>영상에 보이는 채팅 읽어 보기</h4><p>현재 화면 또는 최대 2분 동안의 채팅 글자를 읽습니다. 처음 이용할 때는 한국어·영어 글자 인식 파일을 내려받아야 합니다.</p></div><span class="pill caution">잘못 읽을 수 있어요</span></div><div class="ocr-tools"><label>채팅 화면 영역 <select id="ocrCrop"><option value="left-bottom">왼쪽 아래 · 채팅 중심</option><option value="left-wide">왼쪽 넓게 · 위치가 다를 때</option><option value="full">전체 화면</option></select></label><label>구간 시작(초) <input id="ocrStart" min="0" type="number" value="0"/></label><label>구간 길이(초) <input id="ocrLength" max="120" min="5" type="number" value="30"/></label><label>간격(초) <input id="ocrStep" max="30" min="3" type="number" value="5"/></label></div><div class="toolrow"><button class="button light" id="ocrFrame">현재 화면 글자 읽기</button><button class="button outline" id="ocrScan">선택한 구간 글자 읽기</button><span class="micro-caption" id="ocrStatus">처음 실행할 때 인터넷이 필요합니다.</span></div><div class="ocr-output" hidden="" id="ocrOutput"></div><p class="micro-caption">표시되는 시간은 영상 재생 시간입니다. 실제 게임 시간과 다를 수 있으며, 화면 글자를 잘못 읽을 수 있습니다.</p></div></details><div class="event-list-head"><h4>내가 기록한 장면 <span id="eventCount">0</span></h4><button class="text-button" id="sampleEvents">예시 2개 보기</button></div><div class="event-list" id="eventList"><div class="results-empty">아직 기록한 장면이 없습니다.</div></div>
 </section><section class="panel" data-panel="auto" hidden role="tabpanel">
 <div class="panel-title"><div><h3>영상에서 수상한 부분 찾아보기</h3><p>영상에 보이는 <b>채팅</b>을 자동으로 읽고, 별도로 가져온 <b>경기 기록</b>에서 사망·이동·CS 변화를 확인합니다.</p></div><span class="pill">채팅·경기 기록 분석</span></div>
@@ -68,6 +81,20 @@
 <div class="auto-results-head"><div><h4>다시 확인해 볼 장면 <span id="autoCount">0</span></h4><p>시간을 누르면 해당 장면으로 이동합니다. 화면 분석 결과는 트롤링 확정이 아닙니다.</p></div><button class="button outline" id="autoExport">찾은 내용 저장 ↓</button></div>
 <div class="auto-summary" id="autoSummary">아직 찾은 내용이 없습니다.</div>
 <div class="auto-findings" id="autoFindings"><div class="results-empty">영상 채팅 검색이나 경기 기록 분석을 먼저 실행해 주세요.</div></div>
+
+<section class="chat-log-panel" aria-label="영상 채팅 OCR 로그">
+<div class="chat-log-head">
+  <div><div class="kicker">영상 채팅 · 자동 기록</div><h3>감지된 채팅 로그 <span class="chat-log-count">0</span></h3><p>영상에서 글자가 읽힐 때마다 시간순으로 쌓입니다. 문제 표현은 강조 표시합니다.</p></div>
+  <div class="chat-log-actions">
+    <label class="chat-log-filter-wrap">표시 <select class="chat-log-filter" aria-label="채팅 로그 표시 범위"><option value="all">모든 채팅</option><option value="flagged">문제 표현만</option></select></label>
+    <button class="button outline chat-log-export" type="button">로그 저장 ↓</button>
+    <button class="text-button chat-log-clear" type="button">비우기</button>
+  </div>
+</div>
+<div class="chat-log-counter">확인할 표현 <b class="chat-log-flagged-count">0</b>건 <span class="chat-log-status" role="status">영상을 열고 재생하거나 분석을 시작하세요.</span></div>
+<div class="chat-log-list" role="list" aria-label="시간순 채팅 OCR 기록"></div>
+<p class="chat-log-hint">OCR로 읽힌 글자이므로 실제 채팅과 다를 수 있습니다. 시간 버튼을 누르면 해당 영상으로 이동합니다. 같은 문장은 짧은 시간 동안 중복 표시하지 않습니다.</p>
+</section>
 <details class="simple-details"><summary>찾은 내용이 틀릴 수도 있나요?</summary><div class="auto-limit"><p><b>자동으로 찾을 수 있는 것</b> — 화면에 나타난 채팅의 OCR 후보, 타임라인에서의 CS·사망·위치 변화 패턴.</p><p><b>영상만 보고 확정할 수 없는 것</b> — 고의적 사망 여부, 라이너에게서 고의로 CS를 빼앗았는지, 백도어가 가능한 상황이었는지, 채팅 선언 뒤 실제로 게임을 포기했는지.</p><p><b>확인하는 순서</b> — 사실 확인 → 반복성 → 게임 맥락 → 정상적 반례 → 근거 종합. 공식 게임사 제재와 무관합니다.</p></div></details>
 </section>
 <section class="panel" data-panel="standards" hidden="" role="tabpanel">
@@ -115,6 +142,7 @@
 <script defer="" src="standards.js"></script>
 <script defer="" src="heuristics.js"></script>
 <script defer="" src="vision.js"></script>
+<script defer="" src="chat_log.js"></script>
 <script defer="" src="auto.js"></script>
 <script defer="" src="ocr_watch.js"></script>
 </body>
