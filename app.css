@@ -84,3 +84,6 @@
 .ocr-debug pre{margin:8px 0;max-height:210px;overflow:auto;background:#08151b;padding:12px;white-space:pre-wrap;word-break:break-word;font:12px/1.7 ui-monospace,monospace;color:#cce6dc;border-radius:7px}
 .peer-test{display:block;padding:0;scroll-margin-top:15px}.peer-test>summary{list-style:none;cursor:pointer;padding:15px 20px;color:#d0f4e2;font-size:13px;font-weight:700}.peer-test>summary::-webkit-details-marker{display:none}.peer-test>summary span{font-weight:400;color:#91b8a4;margin-left:10px}.peer-test .peer-inner{padding:6px 24px 24px}.peer-test:not([open]){background:#14231e;border-color:#283d35}
 @media(max-width:600px){.peer-test .peer-inner{padding:8px 12px 16px}}
+
+/* v5.3 - analysis workspace first, obsolete introduction & peer form removed */
+.workspace{padding-top:30px}.workspace-quick-actions{display:flex;align-items:center;flex-wrap:wrap;gap:10px;padding:0 0 24px}.workspace-quick-actions .micro-caption{margin-left:6px}@media(max-width:600px){.workspace-quick-actions{display:grid;grid-template-columns:1fr 1fr}.workspace-quick-actions .micro-caption{grid-column:1/-1}.workspace-quick-actions .button{font-size:12px;padding:10px 6px;white-space:normal}}
