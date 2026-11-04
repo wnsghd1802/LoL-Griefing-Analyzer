@@ -94,3 +94,30 @@
 .ocr-preview-label{margin-top:12px;margin-bottom:8px;font-size:12px;font-weight:650}.ocr-crop-preview{min-height:46px;max-height:290px;overflow:auto;border:1px dashed rgba(115,180,175,.36);border-radius:9px;padding:8px;font-size:12px;color:var(--muted)}
 .ocr-crop-preview canvas{image-rendering:auto;width:100%;height:auto;max-width:100%}
 @media(max-width:600px){.live-watch-controls{align-items:stretch;flex-direction:column}.live-watch-controls .button{width:100%}}
+
+/* v5.5 OCR chat log: visible during playback and full-video analysis */
+.chat-log-panel{margin:18px 0 25px;border:1px solid rgba(92,183,161,.28);border-radius:15px;padding:18px;background:rgba(9,29,37,.55);min-width:0}
+.chat-log-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.chat-log-head h3{font-size:20px;line-height:1.35;margin:4px 0 7px}
+.chat-log-head h3 span{font-size:14px;display:inline-block;padding:3px 9px;border-radius:50px;border:1px solid rgba(104,201,172,.27);vertical-align:middle}
+.chat-log-head p,.chat-log-hint{font-size:12px;line-height:1.6;color:var(--muted,#abc0c9);margin:0}
+.chat-log-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.chat-log-filter-wrap{font-size:12px;color:var(--muted,#c0d6db);display:flex;align-items:center;gap:7px}
+.chat-log-filter-wrap select{background:rgba(10,27,34,.9);border:1px solid rgba(112,180,173,.3);color:inherit;border-radius:8px;padding:9px 8px;max-width:170px}
+.chat-log-actions .button{font-size:12px;padding:9px 12px}
+.chat-log-counter{margin:13px 0 9px;font-size:12px;display:flex;gap:13px;align-items:center;flex-wrap:wrap}
+.chat-log-flagged-count{color:#ffb87d}
+.chat-log-status{color:var(--muted,#adc4c9);line-height:1.5}
+.chat-log-list{border:1px solid rgba(110,174,178,.25);background:rgba(2,15,23,.42);border-radius:10px;height:290px;overflow-y:auto;overscroll-behavior:contain;padding:6px 8px;scrollbar-color:rgba(118,178,173,.45) transparent}
+.chat-log-list:empty:before{content:'아직 감지된 채팅이 없습니다. 영상 재생 또는 채팅 분석을 시작하면 이곳에 쌓입니다.';display:block;color:var(--muted,#a9c0c9);font-size:13px;line-height:1.6;padding:22px 12px}
+.chat-log-row{display:flex;gap:11px;padding:10px 6px;border-bottom:1px solid rgba(100,164,165,.13);align-items:flex-start}
+.chat-log-row:last-child{border-bottom:0}
+.chat-log-row.chat-log-flagged{background:rgba(183,103,38,.11);border-left:3px solid #ffaf6b;padding-left:8px}
+.chat-log-time{border:0;background:none;cursor:pointer;color:#98e9d5;font-size:12px;font-variant-numeric:tabular-nums;padding:3px 0;white-space:nowrap}
+.chat-log-time:hover{text-decoration:underline}
+.chat-log-message{min-width:0;flex:1}
+.chat-log-message p{margin:0 0 4px;line-height:1.55;font-size:13px;color:var(--text,#ebf4f4);white-space:pre-wrap;overflow-wrap:anywhere}
+.chat-log-message small{color:var(--muted,#a8bcc1);font-size:11px;line-height:1.4}
+.chat-log-flagged .chat-log-message p{font-weight:600}
+.chat-log-hint{margin-top:9px}
+@media(max-width:640px){.chat-log-panel{padding:12px}.chat-log-head h3{font-size:18px}.chat-log-actions{width:100%}.chat-log-actions .chat-log-filter-wrap{flex:1}.chat-log-list{height:240px}.chat-log-row{gap:8px}}
