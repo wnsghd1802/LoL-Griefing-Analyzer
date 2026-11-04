@@ -93,7 +93,7 @@
    const originalCompact=String(text??'').replace(/[\s·._-]+/g,'').toLowerCase();
    const labels=[];
    if(/(?:오픈(?:함|해|한다|할게|하자|할거|하겠|각)?|게임포기|겜안함|게임안함|나안해|던진다|던짐|고의로죽|일부러죽)/i.test(compact)||/\b(?:open\s*(?:mid|top|bot)|run\s*it\s*down|i\s*am\s*afk)\b/i.test(t)||/\bafk\b/i.test(t))labels.push('게임 포기·방해 선언 후보');
-   if(/(?:ㅅㅂ|ㅂㅅ|ㅈㄹ)/.test(originalCompact)||/(?:시발|씨발|병신|개새끼|닥쳐|꺼져|느금)/i.test(compact)||/\b(?:idiot|stupid|trash|moron|retard|fuck|fucking|useless|loser)\b/i.test(t))labels.push('공격적 표현 후보');
+   if(/(?:ㅅㅂ|ㅆㅂ|ㅂㅅ|ㅈㄹ|ㅈㄴ)/.test(originalCompact)||/(?:시발|씨발|시팔|씨팔|병신|븅신|개새끼|닥쳐|꺼져|느금|니애미|니엄마|뒤져|애미뒤|고아새끼)/i.test(compact)||/\b(?:idiot|stupid|trash|moron|retard|fuck|fucking|useless|loser|kys|shut\s*up)\b/i.test(t))labels.push('공격적 표현 후보');
    return labels;
  }
  function extractOCRCandidates(text){
