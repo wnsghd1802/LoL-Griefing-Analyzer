@@ -32,6 +32,8 @@ function csFromLine(s){
  const text=String(s);
  let m=text.match(/(?:\bCS\b|미니언|Minions?|creep\s*score)\s*[:：]?\s*(\d{1,3})(?!\d)/i);
  if(!m)m=text.match(/(?:^|\s)(\d{1,3})\s*(?:CS\b|미니언)\b/i);
+ // OP.GG match rows can omit an explicit CS label and show 220 (8.4) instead.
+ if(!m)m=text.match(/(?:^|\s)(\d{2,3})\s*\(\s*(?:\d{1,2})(?:\.\d{1,2})?\s*\)(?=\s|$)/);
  return m&&Number(m[1])<=700?Number(m[1]):null;
 }
 function wordLines(words){
