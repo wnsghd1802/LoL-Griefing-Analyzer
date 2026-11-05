@@ -12,13 +12,14 @@
 <div class="shell">
 <header class="topbar">
 <a aria-label="LoL 트롤링 판독기 홈" class="logo" href="#workspace"><span class="logo-mark">▶</span><span>LoL <span class="dim">트롤링 판독기</span></span></a>
-<div class="header-right"><span class="status-dot"></span><span class="local-note">내 영상은 내 컴퓨터에서만 열려요</span><span class="version">v5.5 BETA</span></div>
+<div class="header-right"><span class="status-dot"></span><span class="local-note">내 영상은 내 컴퓨터에서만 열려요</span><span class="version">v5.6 BETA</span></div>
 </header>
 <main>
 <section class="workspace" id="workspace">
-<div class="workspace-quick-actions"><button class="button primary" id="startDemo">▶ 예시로 체험하기</button><button class="button outline" id="goVideo">🎬 내 영상 선택하기</button><span class="micro-caption">영상은 서버로 전송되지 않습니다.</span></div>
-<div class="workspace-head"><div><span class="kicker">직접 사용해 보세요</span><h2>경기 확인하기</h2><p class="workspace-intro">먼저 <b>영상 보기</b>에서 파일을 선택하세요. 그다음 <b>의심 장면 찾기</b>에서 채팅을 살펴볼 수 있습니다.</p></div><div class="privacy"><span class="status-dot"></span>영상은 내 PC에서 열립니다</div></div>
-<div aria-label="분석 기능" class="tabs" role="tablist"><button aria-selected="true" class="selected" data-tab="video" role="tab">▶ 영상 보기</button><button aria-selected="false" data-tab="auto" role="tab">⚡ 의심 장면 찾기</button><button aria-selected="false" data-tab="standards" role="tab">✓ 장면 자세히 확인</button><button aria-selected="false" data-tab="chat" role="tab">💬 채팅 검사</button><button aria-selected="false" data-tab="cs" role="tab">▥ CS 분석</button><button aria-selected="false" data-tab="report" role="tab">↓ 결과 다운로드</button></div>
+<div class="workspace-head"><div><span class="kicker">LoL 트롤링 판독기</span><h2>영상 선택 → 채팅 확인 → 의심 장면 찾기</h2><p class="workspace-intro">영상을 넣고 재생하면 읽힌 채팅이 아래 로그에 쌓입니다. 영상 파일은 서버에 전송되지 않습니다.</p></div></div>
+<div class="workspace-quick-actions"><button class="button primary" id="goVideo">🎬 내 영상 선택하기</button><button class="button outline" id="startDemo">▶ 예시로 체험하기</button></div>
+<div aria-label="주요 분석 기능" class="tabs tabs-primary" role="tablist"><button aria-selected="true" class="selected" data-tab="video" role="tab">▶ 영상 보기</button><button aria-selected="false" data-tab="auto" role="tab">⚡ 의심 장면 찾기</button></div>
+<details class="extra-tab-drawer"><summary>기타 기능 · 장면 검토 / 채팅 / CS / 결과 저장</summary><div aria-label="추가 분석 기능" class="tabs tabs-extra" role="tablist"><button aria-selected="false" data-tab="standards" role="tab">✓ 장면 검토</button><button aria-selected="false" data-tab="chat" role="tab">💬 채팅 검사</button><button aria-selected="false" data-tab="cs" role="tab">▥ CS 분석</button><button aria-selected="false" data-tab="report" role="tab">↓ 결과 저장</button></div></details>
 <div aria-live="polite" class="feedback" hidden="" id="feedback" role="status"></div>
 
 
@@ -26,10 +27,10 @@
 
 
 <section class="panel visible" data-panel="video" role="tabpanel">
-<div class="panel-title"><div><h3>경기 영상 선택</h3><p>영상을 연 뒤 분석을 시작하면 확인할 장면과 시간이 목록에 표시됩니다.</p></div><span class="pill">1단계 · 파일 선택</span></div>
+<div class="panel-title"><div><h3>경기 영상</h3><p>파일을 선택해 재생하거나 전체 영상 분석을 시작하세요.</p></div></div>
 <div class="toolrow"><label class="file-button">🎬 영상 파일 선택하기 <input accept="video/*,.mp4,.mkv,.mov,.webm" id="videoFile" type="file"/></label><span class="micro-caption" id="videoName">영상이 선택되지 않았습니다.</span></div>
-<div class="video-primary-actions"><button class="button primary" id="goAutoAnalysis" disabled>⚡ 영상 분석 시작</button><span class="micro-caption">버튼을 누르면 영상 전체에서 채팅 글자를 자동으로 읽기 시작합니다. 오래 걸릴 수 있으며 진행률이 표시됩니다.</span></div>
-<div class="live-watch-controls"><button class="button outline" id="liveWatchToggle" type="button" aria-pressed="true">● 재생 중 채팅 감시: 켜짐</button><span class="micro-caption" id="liveWatchStatus" aria-live="polite">영상을 재생하면 화면 속 채팅을 주기적으로 검사합니다. 최초 실행 시 한국어 OCR 모델을 불러옵니다.</span></div><div class="video-grid"><div class="video-container"><video controls="" id="video" playsinline="" preload="metadata"></video><div class="video-empty" id="videoEmpty"><span class="video-icon">▶</span><strong>경기 영상을 선택해 주세요</strong><small>영상이 재생되지 않으면 MP4(H.264) 파일로 시도해 주세요.</small></div></div><details class="annotation manual-annotation"><summary>내가 발견한 장면도 기록하기 <span id="currentTime">00:00</span> <small>선택사항 · 시간 자동 기록</small></summary><div class="manual-fields"><label>어떤 행동인가요?<select id="eventType"><option value="게임 포기 선언 후 행동">게임 포기 선언 후 행동</option><option value="고의적 사망 의심">고의적 사망 의심</option><option value="반복적인 무활동">반복적인 무활동</option><option value="자원·CS 방해 의심">자원·CS 방해 의심</option><option value="넥서스 방어 이탈 의심">넥서스 방어 이탈 의심</option><option value="스킬·아이템 방해 의심">스킬·아이템 방해 의심</option><option value="괴롭힘·방해 의심">괴롭힘·방해 의심</option><option value="채팅/언어적 공격">채팅/언어적 공격</option><option value="정상 플레이 참고">정상 플레이 참고</option><option value="기타">기타</option></select></label><label>무슨 일이 있었나요?<textarea id="eventFact" placeholder="예: 넥서스가 공격받는 동안 아군이 탑 쪽으로 이동함" rows="3"></textarea></label><label>다른 이유가 있을까요? (선택)<input id="eventAlternative" placeholder="예: 백도어 시도였을 수 있음"/></label><label>현재 판단<select id="eventStatus"><option value="검토 필요">검토 필요</option><option value="영상상 사실 확인 / 의도 미확정">영상상 사실 확인 / 의도 미확정</option><option value="의심 기각">의심 기각</option></select></label><button class="button primary wide" id="addEvent">현재 장면 저장</button></div></details></div>
+<div class="video-primary-actions"><button class="button primary" id="goAutoAnalysis" disabled>⚡ 영상 분석 시작</button><span class="micro-caption">영상 전체를 OCR로 확인합니다. 진행률은 분석 화면에 표시됩니다.</span></div>
+<div class="live-watch-controls"><button class="button outline" id="liveWatchToggle" type="button" aria-pressed="true">● 재생 중 채팅 감시: 켜짐</button><span class="micro-caption" id="liveWatchStatus" aria-live="polite">재생 중 OCR 감시 · 첫 실행 시 모델 다운로드 필요</span></div><div class="video-grid"><div class="video-container"><video controls="" id="video" playsinline="" preload="metadata"></video><div class="video-empty" id="videoEmpty"><span class="video-icon">▶</span><strong>경기 영상을 선택해 주세요</strong><small>영상이 재생되지 않으면 MP4(H.264) 파일로 시도해 주세요.</small></div></div><details class="annotation manual-annotation"><summary>내가 발견한 장면도 기록하기 <span id="currentTime">00:00</span> <small>선택사항 · 시간 자동 기록</small></summary><div class="manual-fields"><label>어떤 행동인가요?<select id="eventType"><option value="게임 포기 선언 후 행동">게임 포기 선언 후 행동</option><option value="고의적 사망 의심">고의적 사망 의심</option><option value="반복적인 무활동">반복적인 무활동</option><option value="자원·CS 방해 의심">자원·CS 방해 의심</option><option value="넥서스 방어 이탈 의심">넥서스 방어 이탈 의심</option><option value="스킬·아이템 방해 의심">스킬·아이템 방해 의심</option><option value="괴롭힘·방해 의심">괴롭힘·방해 의심</option><option value="채팅/언어적 공격">채팅/언어적 공격</option><option value="정상 플레이 참고">정상 플레이 참고</option><option value="기타">기타</option></select></label><label>무슨 일이 있었나요?<textarea id="eventFact" placeholder="예: 넥서스가 공격받는 동안 아군이 탑 쪽으로 이동함" rows="3"></textarea></label><label>다른 이유가 있을까요? (선택)<input id="eventAlternative" placeholder="예: 백도어 시도였을 수 있음"/></label><label>현재 판단<select id="eventStatus"><option value="검토 필요">검토 필요</option><option value="영상상 사실 확인 / 의도 미확정">영상상 사실 확인 / 의도 미확정</option><option value="의심 기각">의심 기각</option></select></label><button class="button primary wide" id="addEvent">현재 장면 저장</button></div></details></div>
 
 <section class="chat-log-panel" aria-label="영상 채팅 OCR 로그">
 <div class="chat-log-head">
@@ -135,7 +136,13 @@
 <div class="panel-title"><div><h3>지금까지 기록한 내용 저장하기</h3><p>내가 확인한 장면, 채팅, CS 기록을 파일로 저장할 수 있습니다. 저장하기 전에 닉네임 등 개인정보를 확인해 주세요.</p></div><span class="pill">3단계 · 저장</span></div>
 <div class="report-cards"><div class="metric"><small>직접 확인한 장면</small><strong id="reportCases">0</strong></div><div class="metric"><small>분석된 CS 구간</small><strong id="reportCs">0</strong></div><div class="metric"><small>수상한 채팅</small><strong id="reportChat">0</strong></div><div class="metric"><small>영상에서 저장한 장면</small><strong id="reportEvents">0</strong></div></div>
 <div class="report-preview"><div class="chart-top"><strong>저장할 내용 미리보기</strong><span class="kicker">직접 확인용 기록</span></div><pre id="reportPreview">영상이나 경기 기록을 확인하면 이곳에 내용이 표시됩니다.</pre></div><div class="toolrow"><button class="button primary" id="downloadJson">전체 기록 저장 ↓</button><button class="button outline" id="downloadTxt">읽기 쉬운 요약 저장 ↓</button><button class="button outline" id="downloadChat">채팅 목록 저장 ↓</button></div><div class="callout"><b>개인정보 확인</b> 파일 내보내기 전 실명, 계정명, 연락처가 포함되어 있지 않은지 확인하세요. 분석 결과는 운영사 제재나 특정 이용자의 고의성에 대한 확정 판정이 아닙니다.</div>
-</section></section></main>
+</section></section>
+<section class="peer-quote-note" aria-label="동료의 한마디">
+  <div class="peer-quote-heading"><strong>동료의 한마디</strong><span>익명 · 사용성 의견</span></div>
+  <blockquote>“페이지의 의도는 좋으나 페이지가 너무 번잡스럽다 좀 더 한 눈에 보였으면 좋겠다.”</blockquote>
+  <p><b>반영한 내용</b> — 첫 화면은 영상 보기와 의심 장면 찾기만 우선 노출하고, 채팅·CS·결과 저장 등 세부 기능은 접어서 볼 수 있게 정리했습니다.</p>
+</section>
+</main>
 <footer><div class="footer-simple"><b>LoL 트롤링 판독기</b><span>트롤링이 의심되는 장면을 찾고 기록하는 도구 · 게임사 공식 제재와 무관합니다.</span><small>BR-B · 2026</small></div></footer>
 </div>
 <script defer="" src="app.js"></script>
