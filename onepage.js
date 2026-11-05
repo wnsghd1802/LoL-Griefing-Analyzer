@@ -30,6 +30,10 @@
     scanActive=false;scanStarted=false;scanFinished=false;lastKey='';
     window.PlayCheckAuto?.reset?.();
     window.PlayCheckChatLog?.clear?.();
+    const oldProgress=$('#autoProgress'),oldProgressBar=$('#autoProgressBar'),oldStatus=$('#autoVideoStatus');
+    if(oldProgress)oldProgress.setAttribute('aria-valuenow','0');
+    if(oldProgressBar)oldProgressBar.style.width='0%';
+    if(oldStatus)oldStatus.textContent='새 영상의 채팅 분석을 준비하고 있습니다.';
     ui.findings.replaceChildren();ui.logs.replaceChildren();
     ui.light.className='one-status-light';ui.state.textContent='자동 분석 준비 중';
     ui.progress.style.width='0%';ui.checked.textContent='0';ui.read.textContent='0';
