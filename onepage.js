@@ -12,7 +12,7 @@
     title:$('#oneDropTitle'),subtitle:$('#oneDropSub'),caption:$('#oneFileCaption'),
     crop:$('#oneCrop'),fixRetry:$('#oneFixRetry'),help:$('#oneHelp')
   };
-  let currentFile=null,scanActive=false,scanStarted=false,scanFinished=false,viewFilter='all',lastKey='';
+  let currentFile=null,scanActive=false,scanStarted=false,scanFinished=false,viewFilter='all',lastKey='',demoMode=false;
   let token=0,startTimeout=0;
   const fmt=secs=>{
     const n=Math.max(0,Math.floor(Number(secs)||0));
@@ -47,7 +47,7 @@
       return;
     }
     if(scanActive){ui.status.textContent='현재 분석을 중지한 뒤 새 영상을 선택해 주세요.';return;}
-    currentFile=file;token++;
+    demoMode=false;currentFile=file;token++;
     resetUI();ui.results.hidden=false;
     ui.title.textContent=file.name;
     ui.subtitle.textContent=size(file.size)+' · 영상이 선택되었습니다. 자동 분석을 시작합니다.';
@@ -108,11 +108,30 @@
   }
   ui.stop.addEventListener('click',cancelScan);
   function retry(){
-    if(!currentFile)return;
+    if(!currentFile||demoMode){note('실제 재분석을 하려면 먼저 영상을 선택해 주세요.');return;}
     if(scanActive){cancelScan();return;}
     resetUI();
     startScan();
   }
+  $('#oneSample')?.addEventListener('click',()=>{
+    if(scanActive){note('진행 중인 분석을 먼저 완료하거나 중지해 주세요.');return;}
+    demoMode=true;currentFile={name:'[가상 예시] 테스트 채팅',size:0};token++;
+    resetUI();ui.results.hidden=false;scanFinished=true;scanStarted=true;
+    ui.title.textContent='가상 예시로 미리보기';ui.subtitle.textContent='실제 게임 영상이 아닌 예시입니다. 새로운 영상을 선택하면 실제 분석을 시작합니다.';
+    ui.caption.textContent='가상 데이터 시연 · 실제 플레이어의 채팅이나 판정 결과가 아닙니다.';
+    const placeholder=document.createElement('div');placeholder.className='one-player-placeholder';
+    placeholder.textContent='가상 예시 · 실제 영상이 없습니다';
+    ui.player.replaceChildren(placeholder);
+    window.PlayCheckChatLog?.appendFrame('아군: 다음 용 같이 가자',75,'가상 예시');
+    window.PlayCheckChatLog?.appendFrame('아군: 오픈함',120,'가상 예시');
+    window.PlayCheckChatLog?.appendFrame('아군: 그냥 해보자',145,'가상 예시');
+    window.PlayCheckChatLog?.appendFrame('아군: 씨발',165,'가상 예시');
+    window.PlayCheckAuto?.addOCRFindings?.([
+      {source:'가상 예시',at:120,category:'게임 포기·방해 선언 후보',title:'게임 포기 선언 후보',rule:'예시',fact:'[가상 예시] 화면에서 읽힌 글자: “오픈함”',alternative:'선언 후 실제 행동은 검증되지 않음'},
+      {source:'가상 예시',at:165,category:'공격적 표현 후보',title:'공격적 표현 후보',rule:'예시',fact:'[가상 예시] 화면에서 읽힌 글자: “씨발”',alternative:'언어적 공격 신호와 게임 방해 행동은 구분해야 함'}
+    ]);
+    render();ui.results.scrollIntoView({behavior:'smooth',block:'start'});
+  });
   ui.retry.addEventListener('click',retry);
   ui.fixRetry.addEventListener('click',retry);
   ui.export.addEventListener('click',()=>{
@@ -206,8 +225,10 @@
     ui.logCount.textContent=String(stats.total);
     ui.findingsCount.textContent=String(findings.length);
     ui.progress.style.width=Math.max(0,Math.min(100,Number(progress)||0))+'%';
-    if(legacy)note(legacy);
-    if(scanActive){
+    if(demoMode){note('예시로 작동을 확인하는 화면입니다. 실제 게임 영상이 아니며 결과도 가상 데이터입니다.');}
+    else if(legacy)note(legacy);
+    if(demoMode){ui.state.textContent='가상 예시 · 시연 완료';ui.light.className='one-status-light done';ui.progress.style.width='100%';ui.stop.disabled=true;}
+    else if(scanActive){
       ui.state.textContent='자동 분석 중 · '+(Number(progress)||0)+'%';
       ui.light.className='one-status-light';ui.stop.disabled=false;
     }else if(scanFinished){
@@ -221,7 +242,8 @@
       }
       ui.stop.disabled=true;
     }
-    if(findings.length){
+    if(demoMode){ui.conclusion.textContent='가상 예시 결과입니다. 실제 영상에서 채팅이 감지되는지를 검증한 결과가 아닙니다.';}
+    else if(findings.length){
       ui.conclusion.textContent='의심 표현 '+findings.length+'건을 찾았습니다. 목록을 누르면 해당 장면으로 이동할 수 있습니다. 실제 고의성은 영상 맥락을 확인해야 합니다.';
     }else if(scanFinished&&stats.total){
       ui.conclusion.textContent='인식된 문장 '+stats.total+'줄 중 설정된 의심 표현이 검출되지 않았습니다. 정상 플레이를 확정하는 결과는 아닙니다.';
