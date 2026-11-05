@@ -18,12 +18,28 @@
       <div class="one-eyebrow">게임 영상 자동 검토</div>
       <h1>영상 하나로, <em>의심 장면을 찾아보세요.</em></h1>
       <p>녹화 영상을 선택하면 채팅 글자를 읽고, 의심 표현과 해당 시점을 자동으로 정리합니다. 별도 설정이나 경기 기록 파일은 필요하지 않습니다.</p>
+      <div class="one-identity">
+        <label for="oneRiotId"><strong>분석할 플레이어</strong><small>선택 · 라이엇 ID</small></label>
+        <input id="oneRiotId" type="text" maxlength="80" spellcheck="false" autocomplete="off" placeholder="게임 이름#KR1"/>
+        <button class="one-outline one-lookup" id="oneLookup" type="button">OP.GG 전적 보기 ↗</button>
+      </div>
+      <p id="oneRiotHelp" class="one-identity-hint" aria-live="polite">닉네임을 입력하면 전적 검색이 바로 열리고 스크린샷에서 해당 플레이어의 기록을 우선 찾습니다.</p>
       <div class="one-drop" id="oneDrop" tabindex="0" role="button" aria-label="경기 영상 파일 선택 또는 여기에 끌어놓기">
         <div class="one-drop-symbol">↥</div>
         <div class="one-drop-copy"><strong id="oneDropTitle">경기 영상 파일을 선택해 주세요</strong><span id="oneDropSub">MP4, WebM 등 브라우저에서 재생되는 영상 · 드래그해서 놓아도 됩니다</span></div>
         <button class="one-primary" id="onePick" type="button">영상 선택</button>
       </div>
       <div class="one-trust">업로드 없이 브라우저 안에서 처리합니다. 로그인·채팅 붙여넣기·시간 직접 입력은 필요하지 않습니다.</div>
+    </section>
+
+    <section class="one-score-card" aria-label="경기 전적 스크린샷 분석">
+      <div class="one-score-top"><div><strong>전적 기록 자동 확인</strong><p>OP.GG 등 전적표의 스크린샷을 선택하면 KDA·CS를 문자 인식으로 추출합니다. 수치 직접 입력은 필요하지 않습니다.</p></div><label class="one-score-pick" for="oneScoreFile">이미지 선택 ↥<input id="oneScoreFile" type="file" accept="image/png,image/jpeg,image/webp,image/bmp" hidden/></label></div>
+      <div id="oneScoreStatus" class="one-score-status" aria-live="polite">전적 검색에서 해당 경기를 열고 스코어 표를 캡처해 올려주세요. 이미지도 서버에 전송되지 않습니다.</div>
+      <div id="oneScoreResults" class="one-score-results" hidden>
+        <div class="one-score-summary" id="oneScoreSummary"></div>
+        <div id="oneScoreRows" class="one-score-rows"></div>
+        <details class="one-score-raw"><summary>OCR로 읽힌 원문 확인</summary><pre id="oneScoreRaw"></pre></details>
+      </div>
     </section>
 
     <section id="oneResults" class="one-results" hidden aria-label="자동 경기 분석 결과">
@@ -205,6 +221,7 @@
 <script defer="" src="chat_log.js"></script>
 <script defer="" src="auto.js"></script>
 <script defer="" src="ocr_watch.js"></script>
+<script defer="" src="scorecard.js"></script>
 <script defer="" src="onepage.js"></script>
 </body>
 </html>
