@@ -121,3 +121,35 @@
 .chat-log-flagged .chat-log-message p{font-weight:600}
 .chat-log-hint{margin-top:9px}
 @media(max-width:640px){.chat-log-panel{padding:12px}.chat-log-head h3{font-size:18px}.chat-log-actions{width:100%}.chat-log-actions .chat-log-filter-wrap{flex:1}.chat-log-list{height:240px}.chat-log-row{gap:8px}}
+
+/* v5.6: keep only the two essential actions visible by default */
+.workspace{padding-top:20px}
+.workspace-head{margin-bottom:14px}
+.workspace-head h2{font-size:clamp(20px,2.4vw,27px);letter-spacing:-.7px}
+.workspace-intro{max-width:730px;line-height:1.6}
+.workspace-quick-actions{padding:0 0 18px;gap:9px}
+.tabs.tabs-primary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:5px;margin:0}
+.tabs.tabs-primary button{padding:12px 10px;font-size:14px}
+.extra-tab-drawer{margin:8px 0 0;border:1px solid var(--border);border-radius:9px;background:rgba(14,32,39,.48)}
+.extra-tab-drawer>summary{list-style:none;cursor:pointer;padding:11px 14px;color:var(--muted);font-size:12px;font-weight:650}
+.extra-tab-drawer>summary::-webkit-details-marker{display:none}
+.extra-tab-drawer>summary:after{content:'⌄';float:right;font-size:16px;line-height:1}
+.extra-tab-drawer[open]>summary:after{content:'⌃'}
+.tabs.tabs-extra{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin:0 8px 8px;padding:6px;border:0;background:transparent}
+.tabs.tabs-extra button{font-size:12px;padding:10px 6px}
+.peer-quote-note{margin:12px 0 34px;padding:18px 20px;border-top:1px solid var(--border);background:rgba(11,28,34,.28);border-radius:0 0 10px 10px}
+.peer-quote-heading{display:flex;align-items:baseline;gap:10px}
+.peer-quote-heading strong{font-size:14px;color:var(--text)}
+.peer-quote-heading span{font-size:11px;color:var(--muted)}
+.peer-quote-note blockquote{margin:10px 0 12px;padding:0 0 0 12px;border-left:2px solid var(--accent);font-size:15px;line-height:1.7;font-weight:500}
+.peer-quote-note p{margin:0;font-size:12px;line-height:1.8;color:var(--muted)}
+.peer-quote-note p b{color:var(--text)}
+@media(max-width:600px){
+  .workspace{padding-top:14px}
+  .workspace-quick-actions{grid-template-columns:1fr 1fr;gap:8px}
+  .tabs.tabs-primary{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .tabs.tabs-primary button{font-size:12px;padding:10px 6px}
+  .tabs.tabs-extra{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .peer-quote-note{padding:14px 12px}
+  .peer-quote-note blockquote{font-size:14px}
+}
