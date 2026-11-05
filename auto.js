@@ -213,6 +213,6 @@ $('#autoExport').onclick=()=>{
  const payload={app:'LoL Griefing Analyzer',version:'5.0',purpose:'의심 신호 검토 보조, 고의성 확정 아님',exportedAt:new Date().toISOString(),items:rows.map(x=>({...x}))};
  bridge.download('playcheck_auto_candidates.json',JSON.stringify(payload,null,2),'application/json;charset=utf-8');
 };
-window.PlayCheckAuto={snapshot:()=>rows.map(x=>({...x})),analyzeTimeline:rules.analyzeTimeline,scanVideo,previewCurrentFrame,isScanning:()=>videoBusy||visionBusy,addOCRFindings:items=>merge(items)};
+window.PlayCheckAuto={snapshot:()=>rows.map(x=>({...x})),reset:()=>{if(videoBusy||visionBusy)return false;rows.length=0;seq=0;render();bridge.renderReport();return true;},analyzeTimeline:rules.analyzeTimeline,scanVideo,previewCurrentFrame,isScanning:()=>videoBusy||visionBusy,addOCRFindings:items=>merge(items)};
 render();
 })();
