@@ -1,0 +1,31 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
+const root=path.resolve(__dirname,'..');
+const read=f=>fs.readFileSync(path.join(root,f),'utf8');
+const html=read('index.html');
+for(const id of ['oneApp','oneDrop','oneRiotId','oneScoreFile','oneResults','oneLog','oneFindings','oneSample','oneExport']){
+  assert.equal((html.match(new RegExp('id="'+id+'"','g'))||[]).length,1,'single-page required id '+id);
+}
+assert(html.includes('페이지의 의도는 좋으나 페이지가 너무 번잡스럽다'), 'actual peer quote in page');
+assert(html.includes('팀 기반 온라인 게임에서 비협조적 행동'), 'task-10 paper linkage');
+assert(!html.includes('src="peer.js"'),'obsolete peer input form must not return');
+const code=read('scorecard.js');
+const mockNick={value:'Example#KR1',addEventListener(){}};
+const context={window:{},document:{querySelector:q=>q==='#oneRiotId'?mockNick:null}};
+vm.runInNewContext(code,context);
+const parse=context.window.PlayCheckScorecard.parseStatsText;
+let s=parse('Example#KR1 7/2/11 CS 220','Example#KR1');
+assert.equal(s.candidates.length,1);assert.equal(s.focus?.cs,220);assert.equal(s.focus?.kills,7);
+s=parse('Ally#KR1 5/5/5 CS 110\nExample#KR1 8/2/7 CS 260\nOther#KR1 1/4/9 CS 92','Example#KR1');
+assert.equal(s.candidates.length,3);assert.equal(s.focus?.cs,260);
+s=parse('Ally#KR1 5/5/5 CS 110\nOther#KR1 1/4/9 CS 92','Example#KR1');
+assert.equal(s.focus,null,'do not assign a random score when nickname is missing');
+assert.equal(parse('Free text without stats','Example#KR1').candidates.length,0);
+const rules=require('../heuristics.js');
+assert(rules.classifyOCR('오픈함').length>0);
+assert(rules.classifyOCR('씨발').length>0);
+assert.equal(rules.classifyOCR('다음 용 같이 가자').length,0);
+for(const file of ['app.js','auto.js','ocr_watch.js','onepage.js','scorecard.js','chat_log.js','heuristics.js','standards.js','vision.js'])new Function(read(file));
+const guide=read('SUBMISSION_GUIDE.txt');
+for(const term of ['짧은 확인 방법 4줄','AI와 나의 판단 3줄','동료','미검증 상태'])assert(guide.includes(term),'submission guide '+term);
+console.log('PASS: v6 HTML requirements, peer note, screenshot-score parser, uncertainty guard, OCR keyword rules, JS syntax and submission guide');
