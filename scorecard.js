@@ -62,7 +62,8 @@ function parseStatsText(raw,requested='',words=[]){
   let cs=csFromLine(line);
   if(cs===null&&lines[i+1]&&!scoreFromLine(lines[i+1]))cs=csFromLine(lines[i+1]);
   if(cs===null&&lines[i-1]&&!scoreFromLine(lines[i-1]))cs=csFromLine(lines[i-1]);
-  const matched=needle.length>=2&&normalize(surrounding).includes(needle);
+  const nameContext=normalize(line).includes(needle)||((lines[i-1]&&!scoreFromLine(lines[i-1]))&&normalize(lines[i-1]).includes(needle));
+  const matched=needle.length>=2&&Boolean(nameContext);
   candidates.push({...kda,cs,matched,line:line.slice(0,250),context:surrounding.slice(0,380)});
  }
  const matching=candidates.filter(c=>c.matched);
