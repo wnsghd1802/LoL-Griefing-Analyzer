@@ -102,3 +102,40 @@ body{margin:0;background:#071219!important;color:#eaf6f5!important;font-family:I
 .one-footer{font-size:11px;color:#78939d;display:flex;justify-content:space-between;gap:12px;padding:5px 0 32px}
 @media(max-width:900px){.one-grid{grid-template-columns:1fr}.one-findings{max-height:290px;min-height:160px}}
 @media(max-width:620px){.one-app{padding:0 14px}.one-top{height:65px}.one-main{padding-top:31px}.one-top-right{font-size:10px}.one-version{display:none}.one-intro>p{font-size:13px}.one-intro h1{font-size:30px}.one-drop{flex-wrap:wrap;padding:17px 14px;gap:10px}.one-drop-copy{flex-basis:calc(100% - 70px)}.one-drop-copy strong{font-size:14px}.one-drop-copy span{font-size:11px}.one-drop .one-primary{width:100%}.one-section-title h2{font-size:21px}.one-status-card,.one-player-card,.one-findings-card,.one-log-card{padding:13px}.one-stats strong{font-size:23px}.one-player{min-height:165px}.one-result-footer{align-items:flex-start;flex-direction:column}.one-log{height:250px}.one-footer{flex-direction:column}}
+
+
+/* Riot ID and scorecard OCR: small supplementary part of the one-page flow */
+.one-identity{display:flex;align-items:center;gap:11px;margin:0 0 8px}
+.one-identity label{display:flex;flex-direction:column;gap:4px;min-width:114px;font-size:13px}
+.one-identity label small{color:#91aeb8;font-size:11px}
+.one-identity input{flex:1;min-width:0;background:#0e212b;border:1px solid #35515d;border-radius:9px;padding:12px 13px;color:#ecf7f5;outline:none;font-size:14px}
+.one-identity input:focus{border-color:#a3efce;box-shadow:0 0 0 2px rgba(163,239,206,.12)}
+.one-identity input::placeholder{color:#718b96}
+.one-lookup{white-space:nowrap;padding:11px 15px}
+.one-identity-hint{font-size:11px;color:#90aeb6;line-height:1.6;margin:0 0 18px}
+.one-score-card{border:1px solid #2c4751;border-radius:15px;background:#10232b;padding:16px 20px;margin-top:18px}
+.one-score-top{display:flex;gap:15px;align-items:center;justify-content:space-between}
+.one-score-top>div{min-width:0}
+.one-score-top strong{display:block;color:#e9f7f4;font-size:15px;margin-bottom:7px}
+.one-score-top p{font-size:12px;line-height:1.7;color:#91b0b8;margin:0}
+.one-score-pick{border:1px solid #427966;color:#b9f6d9;border-radius:9px;background:#1a3936;white-space:nowrap;padding:11px 14px;font-size:12px;font-weight:800;cursor:pointer}
+.one-score-pick:hover{background:#234940}
+.one-score-status{color:#95aeb8;font-size:11px;margin-top:11px;line-height:1.65}
+.one-score-results[hidden]{display:none!important}
+.one-score-results{margin-top:15px;border-top:1px solid #2d4650;padding-top:15px}
+.one-score-subheading{color:#b8e8d9;font-weight:800;font-size:13px;margin-bottom:11px}
+.one-score-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.one-score-metric{padding:12px;background:#0a1c24;border:1px solid #28454d;border-radius:10px;display:flex;flex-direction:column;gap:7px}
+.one-score-metric small{font-size:11px;color:#a4b9c1}
+.one-score-metric strong{font-size:21px;font-variant-numeric:tabular-nums;color:#eafaf3}
+.one-score-uncertain{font-size:12px;color:#e9c492;line-height:1.7;margin:0 0 10px}
+.one-score-rows{margin-top:10px;display:grid;gap:5px;max-height:205px;overflow-y:auto}
+.one-score-row{display:grid;grid-template-columns:90px 110px minmax(0,1fr);align-items:center;gap:9px;border:1px solid #2c4952;border-radius:8px;padding:9px 10px;font-size:12px;color:#abc3c8}
+.one-score-row strong{font-size:14px;color:#a7f2d3;font-variant-numeric:tabular-nums}
+.one-score-row.matched{background:#1d3a37;border-color:#4d927f}
+.one-score-row-context{white-space:nowrap;text-overflow:ellipsis;overflow:hidden;color:#8da8b1}
+.one-score-row-muted{font-size:12px;color:#859eaa;padding:8px}
+.one-score-raw{margin-top:9px;color:#91b3b7;font-size:12px}
+.one-score-raw summary{cursor:pointer}
+.one-score-raw pre{font-size:11px;white-space:pre-wrap;overflow-wrap:anywhere;max-height:150px;overflow:auto;border-radius:9px;background:#06151c;padding:12px}
+@media(max-width:620px){.one-identity{flex-wrap:wrap}.one-identity label{width:100%}.one-identity input{flex-basis:55%}.one-lookup{flex:1}.one-score-card{padding:13px}.one-score-top{align-items:stretch;flex-wrap:wrap}.one-score-pick{width:100%;text-align:center}.one-score-metrics{grid-template-columns:repeat(2,1fr)}.one-score-row{grid-template-columns:75px 76px minmax(0,1fr);gap:5px;padding:7px 6px;font-size:11px}}
