@@ -1,14 +1,15 @@
 'use strict';
 const vm=require('vm'),fs=require('fs'),assert=require('assert');
 const root=require('../heuristics.js');
-const base='/mnt/data/LoL_Griefing_Analyzer_fix/';
+const path=require('path');
+const base=path.resolve(__dirname,'..')+path.sep;
 const video={duration:4,currentTime:0,paused:true,readyState:4,pause(){}};
 const elements=new Map();
 const defaults={'#autoStart':'0','#autoEnd':'','#autoStep':'4','#autoCrop':'left-bottom','#ocrCrop':'left-bottom','#ocrReadableCount':'0','#autoCsRate':'5','#autoJungleId':'','#autoVideoStatus':''};
-function elem(sel){if(!elements.has(sel)){elements.set(sel,{value:defaults[sel]??'',textContent:defaults[sel]??'',disabled:false,style:{},dataset:{},innerHTML:'',setAttribute(){},querySelectorAll(){return []}});}return elements.get(sel);}
+function elem(sel){if(!elements.has(sel)){elements.set(sel,{value:defaults[sel]??'',textContent:defaults[sel]??'',disabled:false,style:{},dataset:{},innerHTML:'',setAttribute(){},replaceChildren(){},querySelectorAll(){return []}});}return elements.get(sel);}
 const worker={recognize:async()=>({data:{text:'(채팅) 오픈함\n아군: 다음 용 같이 가자',confidence:93}})};
 const bridge={formatTime:s=>`00:0${Math.floor(s)}`,notify(){},renderReport(){},video,hasVideo:()=>true,
- ensureOCR:async()=>worker,frameCanvas:()=>({}),setVideoTime:async at=>{video.currentTime=at},addEvent(){},
+ ensureOCR:async()=>worker,frameCanvas:()=>({style:{}}),setVideoTime:async at=>{video.currentTime=at},addEvent(){},
  analyzeChat(){},tab(){}};
 const context={window:{PlayCheckBridge:bridge,PlayCheckHeuristics:root},document:{querySelector:elem},setTimeout,clearTimeout,console};
 vm.createContext(context);
